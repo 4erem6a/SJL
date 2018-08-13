@@ -6,6 +6,7 @@ import com.evg.sjl.parser.ast.*
 
 class PrintVisitor : Visitor {
     private val result = StringBuilder()
+    private var indentLevel = 0
 
     fun clear() = result.setLength(0)
 
@@ -13,6 +14,7 @@ class PrintVisitor : Visitor {
 
     override fun visit(statement: ExpressionStatement) {
         statement.expression.accept(this)
+        result.appendln()
     }
 
     override fun visit(statement: PrintStatement) {
@@ -33,8 +35,12 @@ class PrintVisitor : Visitor {
     }
 
     override fun visit(statement: UnionStatement) {
-        for (stmt in statement.statements)
+        indentLevel++
+        for (stmt in statement.statements) {
+            (0 until indentLevel - 1).forEach { result.append('\t') }
             stmt.accept(this)
+        }
+        indentLevel--
     }
 
     override fun visit(expression: NumberExpression) {
@@ -67,5 +73,7 @@ class PrintVisitor : Visitor {
 
     override fun visit(expression: InputExpression) {
         result.append("input")
+        if (expression.charMode)
+            result.append(" char")
     }
 }
