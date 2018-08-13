@@ -27,6 +27,12 @@ class Parser(private val tokens: List<Token>) {
     private fun statement(): Statement = when {
         lookMatch(0, PRINT) || lookMatch(0, PRINTLN) -> printStatement()
         lookMatch(0, IDENTIFIER) && lookMatch(1, EQ) -> assignmentStatement()
+        match(LC) -> {
+            val statements = ArrayList<Statement>()
+            while (!match(RC))
+                statements.add(statement())
+            UnionStatement(statements)
+        }
         else -> ExpressionStatement(expression())
     }
 

@@ -35,12 +35,19 @@ class PrintVisitor : Visitor {
     }
 
     override fun visit(statement: UnionStatement) {
+        if (statement.statements.isEmpty()) {
+            result.appendln("{ }")
+            return
+        }
         indentLevel++
+        result.appendln("{")
         for (stmt in statement.statements) {
-            (0 until indentLevel - 1).forEach { result.append('\t') }
+            (0 until indentLevel).forEach { result.append('\t') }
             stmt.accept(this)
         }
         indentLevel--
+        (0 until indentLevel).forEach { result.append('\t') }
+        result.appendln("}")
     }
 
     override fun visit(expression: NumberExpression) {

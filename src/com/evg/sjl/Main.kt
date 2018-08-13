@@ -53,7 +53,7 @@ fun main(argv: Array<String>) {
             println("Abstract Syntax tree:\n${sjl.parse()}\nend.")
 
         if (args.printListing)
-            println("Program listing:\n${sjl.listing()}end.")
+            println("Program listing: ${sjl.listing()}")
 
     } catch (e: LexicalException) {
         error("Lexical error:\n\t${e.javaClass.simpleName}\n\t${e.message}")

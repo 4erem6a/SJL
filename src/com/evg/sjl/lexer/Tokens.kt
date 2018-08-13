@@ -15,12 +15,15 @@ enum class TokenTypes {
     LP,                 //(
     RP,                 //)
 
+    LC,                 //{
+    RC,                 //}
+
     PRINT,              //print
     PRINTLN,            //println
     CHAR,               //char
     INPUT,              //input
 
-    EOF                 //^Z
+    EOF
 }
 
 data class Position(val line: Int, val col: Int, val abs: Int) {
