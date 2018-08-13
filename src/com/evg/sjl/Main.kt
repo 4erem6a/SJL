@@ -52,6 +52,9 @@ fun main(argv: Array<String>) {
         if (args.printAST)
             println("Abstract Syntax tree:\n${sjl.parse()}\nend.")
 
+        if (args.printListing)
+            println("Program listing:\n${sjl.listing()}end.")
+
     } catch (e: LexicalException) {
         error("Lexical error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
     } catch (e: SyntaxException) {
@@ -76,6 +79,8 @@ private class Args {
     var printTokens = false
     @Parameter(names = ["-ast"], description = "Print abstract syntax tree", order = 5)
     var printAST = false
-    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 6)
+    @Parameter(names = ["-l", "--listing"], description = "Print program listing", order = 6)
+    var printListing = false
+    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 7)
     var help = false
 }

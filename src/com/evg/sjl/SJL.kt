@@ -8,6 +8,7 @@ import com.evg.sjl.lexer.Lexer
 import com.evg.sjl.lexer.Token
 import com.evg.sjl.parser.Parser
 import com.evg.sjl.parser.ast.Node
+import com.evg.sjl.parser.visitors.PrintVisitor
 
 class SJL(private val source: String) {
     @Throws(SJLException::class)
@@ -25,5 +26,12 @@ class SJL(private val source: String) {
         } catch (e: Exception) {
             throw InnerException(e)
         }
+    }
+
+    @Throws(SJLException::class)
+    fun listing(): String {
+        val pv = PrintVisitor()
+        parse().accept(pv)
+        return pv.toString()
     }
 }
