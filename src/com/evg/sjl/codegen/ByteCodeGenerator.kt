@@ -38,6 +38,8 @@ class ByteCodeGenerator(private val ast: Node) {
             il.add(InsnNode(DUP))
             il.add(FieldInsnNode(GETSTATIC, "java/lang/System", "in", "Ljava/io/InputStream;"))
             il.add(MethodInsnNode(INVOKESPECIAL, "java/util/Scanner", "<init>", "(Ljava/io/InputStream;)V", false))
+            il.add(FieldInsnNode(GETSTATIC, "java/util/Locale", "ENGLISH", "Ljava/util/Locale;"))
+            il.add(MethodInsnNode(INVOKEVIRTUAL, "java/util/Scanner", "useLocale", "(Ljava/util/Locale;)Ljava/util/Scanner;", false))
             il.add(FieldInsnNode(PUTFIELD, generatedClassName, scannerFieldName, "Ljava/util/Scanner;"))
             il.add(InsnNode(RETURN))
 
