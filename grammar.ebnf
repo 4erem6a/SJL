@@ -9,7 +9,7 @@ identifier  = '$', digit | letter | '_', { digit | letter | '_' } ;
 assignment statement        = identifier, '=', expression ;
 print statement             = 'print' | 'println', [ 'char' ], expression, { ';', expression } ;
 expression statement        = expression ;
-union statement             = { statement } ;
+union statement             = { statement } | '{', { statement }, '}';
 
 statement                   = assignment statement | print statement | expression statement | union statement ;
 
