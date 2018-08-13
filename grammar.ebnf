@@ -4,7 +4,7 @@ letter  = ? any letter ? ;
 
 number      = digit, { digit }, [ ',', digit, { digit } ] ;
 character   = "'", any, "'" ;
-identifier  = '$', digit | letter | '_' | '$', { digit | letter | '_' | '$' } ;
+identifier  = '$', digit | letter | '_', { digit | letter | '_' } ;
 
 assignment statement        = identifier, '=', expression ;
 print statement             = 'print' | 'println', [ 'char' ], expression, { ';', expression } ;
