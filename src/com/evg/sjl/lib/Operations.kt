@@ -6,7 +6,8 @@ enum class BinaryOperations : Operations {
     ADDITION,
     SUBTRACTION,
     MULTIPLICATION,
-    DIVISION
+    DIVISION,
+    REMAINDER
 }
 
 enum class UnaryOperations : Operations {

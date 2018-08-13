@@ -58,6 +58,7 @@ class CodegenVisitor : Visitor {
             SUBTRACTION -> DSUB
             MULTIPLICATION -> DMUL
             DIVISION -> DDIV
+            REMAINDER -> DREM
         }))
     }
 

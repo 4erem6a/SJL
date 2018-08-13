@@ -66,6 +66,7 @@ class Parser(private val tokens: List<Token>) {
         loop@ while (true) res = when {
             match(ST) -> BinaryExpression(MULTIPLICATION, res, unary())
             match(SL) -> BinaryExpression(DIVISION, res, unary())
+            match(PR) -> BinaryExpression(REMAINDER, res, unary())
             else -> break@loop
         }
         return res

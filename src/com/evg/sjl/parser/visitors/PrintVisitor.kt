@@ -49,6 +49,7 @@ class PrintVisitor : Visitor {
             SUBTRACTION -> " - "
             MULTIPLICATION -> " * "
             DIVISION -> " / "
+            REMAINDER -> " % "
         })
         expression.right.accept(this)
         result.append(")")

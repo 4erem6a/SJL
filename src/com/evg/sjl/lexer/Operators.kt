@@ -9,6 +9,7 @@ class Operators {
                 "-" to MN,
                 "*" to ST,
                 "/" to SL,
+                "%" to PR,
                 "=" to EQ,
                 "(" to LP,
                 ")" to RP,

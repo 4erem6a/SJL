@@ -9,6 +9,7 @@ enum class TokenTypes {
     ST,                 //*
     MN,                 //-
     PL,                 //+
+    PR,                 //%
     SC,                 //;
 
     LP,                 //(
