@@ -13,7 +13,7 @@ union statement             = { statement } ;
 
 statement                   = assignment statement | print statement | expression statement | union statement ;
 
-binary operator             = '+', '-', '*', '/' ;
+binary operator             = '+', '-', '*', '/', '%' ;
 unary operator              = '-' | '+' ;
 
 number expression           = number | character ;
