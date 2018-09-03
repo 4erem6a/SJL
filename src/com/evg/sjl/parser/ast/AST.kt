@@ -3,6 +3,7 @@ package com.evg.sjl.parser.ast
 import com.evg.sjl.lib.BinaryOperations
 import com.evg.sjl.lib.UnaryOperations
 import com.evg.sjl.parser.visitors.Visitor
+import com.evg.sjl.values.Types
 
 interface Node {
     fun accept(visitor: Visitor)
@@ -15,6 +16,10 @@ data class ExpressionStatement(val expression: Expression) : Statement {
 }
 
 data class PrintStatement(val newLine: Boolean, val charMode: Boolean, val expression: Expression) : Statement {
+    override fun accept(visitor: Visitor) = visitor.visit(this)
+}
+
+data class VariableDefinitionStatement(val identifier: String, val type: Types) : Statement {
     override fun accept(visitor: Visitor) = visitor.visit(this)
 }
 
