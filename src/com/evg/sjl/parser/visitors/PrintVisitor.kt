@@ -3,6 +3,7 @@ package com.evg.sjl.parser.visitors
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations.NEGATION
 import com.evg.sjl.parser.ast.*
+import com.evg.sjl.values.Types
 
 class PrintVisitor : Visitor {
     private val result = StringBuilder()
@@ -28,9 +29,17 @@ class PrintVisitor : Visitor {
         result.appendln()
     }
 
-    override fun visit(expression: AssignmentStatement) {
-        result.append("$${expression.identifier} = ")
-        expression.expression.accept(this)
+    override fun visit(statement: VariableDefinitionStatement) {
+        result.append("$${statement.identifier} : ")
+        result.append(when (statement.type) {
+            Types.NUMBER -> "number"
+            Types.STRING -> "string"
+        })
+    }
+
+    override fun visit(statement: AssignmentStatement) {
+        result.append("$${statement.identifier} = ")
+        statement.expression.accept(this)
         result.appendln()
     }
 
