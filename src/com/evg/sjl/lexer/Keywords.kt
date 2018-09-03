@@ -8,7 +8,9 @@ class Keywords {
                 "print" to PRINT,
                 "println" to PRINTLN,
                 "char" to CHAR,
-                "input" to INPUT
+                "input" to INPUT,
+                "number" to T_NUMBER,
+                "string" to T_STRING
         )
     }
 }
