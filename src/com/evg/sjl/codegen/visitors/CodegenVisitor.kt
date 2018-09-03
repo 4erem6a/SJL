@@ -68,14 +68,14 @@ class CodegenVisitor : Visitor {
             il.add(InsnNode(DNEG))
     }
 
-    override fun visit(expression: AssignmentStatement) {
-        expression.expression.accept(this)
-        if (expression.identifier in st.symbols) {
-            val index = st[expression.identifier]
+    override fun visit(statement: AssignmentStatement) {
+        statement.expression.accept(this)
+        if (statement.identifier in st.symbols) {
+            val index = st[statement.identifier]
             if (index != null)
                 il.add(VarInsnNode(DSTORE, index))
         } else {
-            val index = st.register(expression.identifier)
+            val index = st.register(statement.identifier)
             il.add(VarInsnNode(DSTORE, index))
         }
     }

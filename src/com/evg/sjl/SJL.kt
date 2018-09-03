@@ -1,7 +1,7 @@
 package com.evg.sjl
 
 import com.evg.sjl.codegen.ByteCodeGenerator
-import com.evg.sjl.codegen.byteCodeLoader
+import com.evg.sjl.codegen.ByteCodeLoader
 import com.evg.sjl.exceptions.InnerException
 import com.evg.sjl.exceptions.SJLException
 import com.evg.sjl.lexer.Lexer
@@ -20,7 +20,7 @@ class SJL(private val source: String) {
     @Throws(SJLException::class)
     fun compile(): Runnable {
         try {
-            return byteCodeLoader.loadClass(ByteCodeGenerator(parse()).generate()).newInstance() as Runnable
+            return ByteCodeLoader.loadClass(ByteCodeGenerator(parse()).generate()).newInstance() as Runnable
         } catch (e: SJLException) {
             throw e
         } catch (e: Exception) {
