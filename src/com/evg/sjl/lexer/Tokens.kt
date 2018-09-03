@@ -10,6 +10,7 @@ enum class TokenTypes {
     MN,                 //-
     PL,                 //+
     PR,                 //%
+    CL,                 //:
     SC,                 //;
 
     LP,                 //(
@@ -22,6 +23,9 @@ enum class TokenTypes {
     PRINTLN,            //println
     CHAR,               //char
     INPUT,              //input
+
+    T_NUMBER,           //number
+    T_STRING,           //string
 
     EOF
 }
