@@ -8,6 +8,9 @@ import com.evg.sjl.lexer.TokenTypes.*
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations.NEGATION
 import com.evg.sjl.parser.ast.*
+import com.evg.sjl.values.NumberValue
+import com.evg.sjl.values.StringValue
+import com.evg.sjl.values.Types
 
 class Parser(private val tokens: List<Token>) {
     companion object {
@@ -26,6 +29,7 @@ class Parser(private val tokens: List<Token>) {
 
     private fun statement(): Statement = when {
         lookMatch(0, PRINT) || lookMatch(0, PRINTLN) -> printStatement()
+        lookMatch(0, IDENTIFIER) && lookMatch(1, CL) -> variableDefinitionStatement()
         lookMatch(0, IDENTIFIER) && lookMatch(1, EQ) -> assignmentStatement()
         match(LC) -> {
             val statements = ArrayList<Statement>()
@@ -47,6 +51,21 @@ class Parser(private val tokens: List<Token>) {
         return if (statements.size == 1)
             statements.first()
         else UnionStatement(statements)
+    }
+
+    private fun variableDefinitionStatement(): Statement {
+        val id = consume(IDENTIFIER).value
+        consume(CL)
+        val type = when {
+            match(T_NUMBER) -> Types.NUMBER
+            match(T_STRING) -> Types.STRING
+            else -> throw UnexpectedTokenException(get(), T_NUMBER, T_STRING)
+        }
+        if (match(EQ)) return UnionStatement(listOf(
+                VariableDefinitionStatement(id, type),
+                AssignmentStatement(id, expression())
+        ))
+        return VariableDefinitionStatement(id, type)
     }
 
     private fun assignmentStatement(): Statement {
@@ -88,7 +107,9 @@ class Parser(private val tokens: List<Token>) {
     private fun primary(): Expression {
         val current = get(0)
         if (match(NUMBER))
-            return NumberExpression(current.value.toDouble())
+            return ValueExpression(NumberValue(current.value.toDouble()))
+        if (match(STRING))
+            return ValueExpression(StringValue(current.value))
         if (match(IDENTIFIER))
             return VariableExpression(current.value)
         if (match(INPUT))
