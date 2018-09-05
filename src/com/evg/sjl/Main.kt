@@ -56,13 +56,13 @@ fun main(argv: Array<String>) {
             println("Program listing: ${sjl.listing()}")
 
     } catch (e: LexicalException) {
-        error("Lexical error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
+        System.err.println("Lexical error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
     } catch (e: SyntaxException) {
-        error("Syntax error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
+        System.err.println("Syntax error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
     } catch (e: CompileException) {
-        error("Compilation error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
+        System.err.println("Compilation error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
     } catch (e: InnerException) {
-        error("Inner error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
+        System.err.println("Inner error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
     }
 }
 
