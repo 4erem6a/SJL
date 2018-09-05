@@ -3,6 +3,8 @@ package com.evg.sjl.parser.visitors
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations.NEGATION
 import com.evg.sjl.parser.ast.*
+import com.evg.sjl.values.NumberValue
+import com.evg.sjl.values.StringValue
 import com.evg.sjl.values.Types
 
 class PrintVisitor : Visitor {
@@ -35,6 +37,7 @@ class PrintVisitor : Visitor {
             Types.NUMBER -> "number"
             Types.STRING -> "string"
         })
+        result.appendln()
     }
 
     override fun visit(statement: AssignmentStatement) {
@@ -59,8 +62,11 @@ class PrintVisitor : Visitor {
         result.appendln("}")
     }
 
-    override fun visit(expression: NumberExpression) {
-        result.append(expression.number)
+    override fun visit(expression: ValueExpression) {
+        when (expression.value) {
+            is NumberValue -> result.append(expression.value.value)
+            is StringValue -> result.append("\"${expression.value.value}\"")
+        }
     }
 
     override fun visit(expression: BinaryExpression) {
