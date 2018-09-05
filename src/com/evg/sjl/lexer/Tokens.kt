@@ -3,6 +3,7 @@ package com.evg.sjl.lexer
 enum class TokenTypes {
     IDENTIFIER,         //\$[a-zA-Z_][\w]*
     NUMBER,             //[0-9]+(?:\.[0-9]+)?
+    STRING,             //".*"
 
     EQ,                 //=
     SL,                 ///
