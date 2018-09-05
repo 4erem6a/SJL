@@ -3,7 +3,7 @@ Sample JVM JIT compiler for a sample language created for educational purposes.
 # A few examples:
 ```
 # Sample "Hello, world!" program:
-print char 'H'; 'e'; 'l'; 'l'; 'o'; ','; ' '; 'w'; 'o'; 'r'; 'l'; 'd'; '!'; 10
+println "Hello, world!"
 ```
 ```
 # Some math & variables:
@@ -14,9 +14,11 @@ println $x * ($y + ($x / -$y))
 ```
 # Some user input:
 $i = input
-print $i
-print char ' '; '*'; ' '
-print $i
-print char ' '; '='; ' '
-println $i * $i
+print $i; " * "; $i; " = "; $i * $i; 10
+```
+```
+# Some explicit typings
+$a : number             # = 0
+$b : string             # = ""
+$c : string = $b + $a   # = "0"
 ```
