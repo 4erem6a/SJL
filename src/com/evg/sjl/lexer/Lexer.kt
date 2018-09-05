@@ -4,8 +4,7 @@ import com.evg.sjl.exceptions.InvalidTokenDefinitionException
 import com.evg.sjl.exceptions.UnknownCharacterException
 import com.evg.sjl.exceptions.UnknownKeywordException
 import com.evg.sjl.exceptions.UnknownOperatorException
-import com.evg.sjl.lexer.TokenTypes.IDENTIFIER
-import com.evg.sjl.lexer.TokenTypes.NUMBER
+import com.evg.sjl.lexer.TokenTypes.*
 
 class Lexer(private val source: String) {
     private val length = source.length
@@ -23,11 +22,24 @@ class Lexer(private val source: String) {
                 current in Operators.characters -> operator()
                 current.isWhitespace() -> skip()
                 current == '\'' -> character()
+                current == '"' -> string()
                 else -> throw UnknownCharacterException(current, position())
             }
             current = peek()
         }
         return tokens
+    }
+
+    private fun string() {
+        val pos = position()
+        var buffer = ""
+        var current = skip()
+        while (current != '"') {
+            buffer += current
+            current = skip()
+        }
+        skip()
+        add(Token(STRING, buffer, pos))
     }
 
     private fun character() {
