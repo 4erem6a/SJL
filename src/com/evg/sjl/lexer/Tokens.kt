@@ -12,6 +12,7 @@ enum class TokenTypes {
     PL,                 //+
     PR,                 //%
     CL,                 //:
+    CM,                 //,
     SC,                 //;
 
     LP,                 //(

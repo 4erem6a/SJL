@@ -16,6 +16,7 @@ class Operators {
                 "{" to LC,
                 "}" to RC,
                 ":" to CL,
+                "," to CM,
                 ";" to SC
         )
         val characters = map.keys.reduce(String::plus).toSet()
