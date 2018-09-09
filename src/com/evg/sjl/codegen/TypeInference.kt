@@ -1,5 +1,6 @@
 package com.evg.sjl.codegen
 
+import com.evg.sjl.exceptions.VariableUsedWithoutBeingDeclaredException
 import com.evg.sjl.parser.ast.*
 import com.evg.sjl.parser.visitors.Visitor
 import com.evg.sjl.values.Types
@@ -28,7 +29,8 @@ class TypeInferenceVisitor(val st: SymbolTable) : Visitor {
     }
 
     override fun visit(expression: VariableExpression) {
-        type = st[expression.identifier]!!.type
+        val symbol = st[expression.identifier]
+        type = symbol?.type ?: throw VariableUsedWithoutBeingDeclaredException(expression.identifier)
     }
 
     override fun visit(expression: InputExpression) {
