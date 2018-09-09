@@ -30,7 +30,7 @@ class Parser(private val tokens: List<Token>) {
     private fun statement(): Statement = when {
         lookMatch(0, PRINT) || lookMatch(0, PRINTLN) -> printStatement()
         lookMatch(0, IDENTIFIER) && lookMatch(1, CL) -> variableDefinitionStatement()
-        lookMatch(0, IDENTIFIER) && lookMatch(1, EQ) -> assignmentStatement()
+        lookMatch(0, IDENTIFIER) && (lookMatch(1, EQ) || lookMatch(1, CM))  -> assignmentStatement()
         match(LC) -> {
             val statements = ArrayList<Statement>()
             while (!match(RC))
@@ -69,9 +69,16 @@ class Parser(private val tokens: List<Token>) {
     }
 
     private fun assignmentStatement(): Statement {
-        val id = consume(IDENTIFIER).value
+        val ids = ArrayList<String>()
+        do
+            ids.add(consume(IDENTIFIER).value)
+        while (match(CM))
         consume(EQ)
-        return AssignmentStatement(id, expression())
+        val expression = expression()
+        val statements = ArrayList<Statement>()
+        for (id in ids)
+            statements.add(AssignmentStatement(id, expression))
+        return UnionStatement(statements)
     }
 
     private fun expression(): Expression = additive()
