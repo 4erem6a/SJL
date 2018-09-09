@@ -52,6 +52,6 @@ data class VariableExpression(val identifier: String) : Expression {
     override fun accept(visitor: Visitor) = visitor.visit(this)
 }
 
-data class InputExpression(val charMode: Boolean) : Expression {
+data class InputExpression(val type: Types, val charMode: Boolean = false) : Expression {
     override fun accept(visitor: Visitor) = visitor.visit(this)
 }

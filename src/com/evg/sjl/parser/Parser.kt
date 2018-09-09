@@ -120,13 +120,25 @@ class Parser(private val tokens: List<Token>) {
         if (match(IDENTIFIER))
             return VariableExpression(current.value)
         if (match(INPUT))
-            return InputExpression(match(CHAR))
+            return inputExpression()
         if (match(LP)) {
             val result = expression()
             consume(RP)
             return result
         }
         throw UnexpectedTokenException(current)
+    }
+
+    private fun inputExpression(): Expression {
+        val charMode = match(CHAR)
+        val type = type()
+        return InputExpression(type ?: Types.NUMBER, charMode)
+    }
+
+    private fun type(): Types? = when {
+        match(T_NUMBER) -> Types.NUMBER
+        match(T_STRING) -> Types.STRING
+        else -> null
     }
 
     private fun consume(): Token {
