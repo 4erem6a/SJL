@@ -1,6 +1,5 @@
 package com.evg.sjl.codegen
 
-import com.evg.sjl.codegen.visitors.CodegenVisitor
 import com.evg.sjl.parser.ast.Node
 import jdk.internal.org.objectweb.asm.ClassWriter
 import jdk.internal.org.objectweb.asm.Opcodes.*
@@ -50,10 +49,14 @@ class ByteCodeGenerator(private val ast: Node) {
             val mn = MethodNode(ACC_PUBLIC, "run", "()V", null, null)
 
             mn.instructions = run {
-                val cv = CodegenVisitor()
-                ast.accept(cv)
-                cv.instructions
+                val symbolTable = SymbolTable()
+                val compilationContext = CompilationContext(symbolTable, InsnList(), TypeInferenceProvider(symbolTable))
+
+                ast.compile(compilationContext)
+
+                compilationContext.il
             }
+
             mn.instructions.add(InsnNode(RETURN))
 
             cn.methods.add(mn)
