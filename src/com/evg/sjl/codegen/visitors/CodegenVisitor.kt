@@ -91,7 +91,7 @@ class CodegenVisitor : Visitor {
                 }))
             }
             STRING -> {
-                if (rt == NUMBER) when (expression.operation) {
+                if (rt == NUMBER || rt == STRING) when (expression.operation) {
                     ADDITION -> {
                         il.add(TypeInsnNode(NEW, "java/lang/StringBuilder"))
                         il.add(InsnNode(DUP))
@@ -99,19 +99,9 @@ class CodegenVisitor : Visitor {
                         expression.left.accept(this)
                         il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
                         expression.right.accept(this)
-                        il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(D)Ljava/lang/StringBuilder;", false))
-                        il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false))
-                    }
-                    else -> throw InvalidOperandTypesException(expression.operation, lt, rt)
-                } else if (rt == STRING) when (expression.operation) {
-                    ADDITION -> {
-                        il.add(TypeInsnNode(NEW, "java/lang/StringBuilder"))
-                        il.add(InsnNode(DUP))
-                        il.add(MethodInsnNode(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false))
-                        expression.left.accept(this)
-                        il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
-                        expression.right.accept(this)
-                        il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
+                        if (rt == NUMBER)
+                            il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(D)Ljava/lang/StringBuilder;", false))
+                        else il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
                         il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false))
                     }
                     else -> throw InvalidOperandTypesException(expression.operation, lt, rt)
