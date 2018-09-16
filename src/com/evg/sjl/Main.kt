@@ -49,9 +49,6 @@ fun main(argv: Array<String>) {
         if (args.printTokens)
             println("Token list:\n${sjl.tokenize().joinToString("\n")}end.")
 
-        if (args.printAST)
-            println("Abstract Syntax tree:\n${sjl.parse()}\nend.")
-
         if (args.printListing)
             println("Program listing: ${sjl.listing()}")
 
@@ -77,8 +74,6 @@ private class Args {
     var measureExecTime = false
     @Parameter(names = ["-t", "--tokens"], description = "Print token list", order = 4)
     var printTokens = false
-    @Parameter(names = ["-ast"], description = "Print abstract syntax tree", order = 5)
-    var printAST = false
     @Parameter(names = ["-l", "--listing"], description = "Print program listing", order = 6)
     var printListing = false
     @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 7)
