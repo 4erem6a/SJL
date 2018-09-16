@@ -9,18 +9,14 @@ import jdk.internal.org.objectweb.asm.tree.VarInsnNode
 class AssignmentStatement(val identifier: String, val expression: Expression) : Statement {
     override fun compile(context: CompilationContext) {
         expression.compile(context)
-        if (identifier in context.symbolTable.symbols) {
-            val symbol = context.symbolTable[identifier]
-            if (symbol != null) when (context.typeInference.getType(expression)) {
-                Types.NUMBER -> context.il.add(VarInsnNode(Opcodes.DSTORE, symbol.index))
-                Types.STRING -> context.il.add(VarInsnNode(Opcodes.ASTORE, symbol.index))
-            }
-        } else {
-            val symbol = context.symbolTable.register(identifier, context.typeInference.getType(expression))
-            when (symbol.type) {
-                Types.NUMBER -> context.il.add(VarInsnNode(Opcodes.DSTORE, symbol.index))
-                Types.STRING -> context.il.add(VarInsnNode(Opcodes.ASTORE, symbol.index))
-            }
+        val symbol = (if (identifier in context.symbolTable.symbols)
+            context.symbolTable[identifier]
+        else context.symbolTable.register(identifier, context.typeInference.getType(expression)))
+                ?: return
+        when (context.typeInference.getType(expression)) {
+            Types.DOUBLE -> context.il.add(VarInsnNode(Opcodes.DSTORE, symbol.index))
+            Types.INTEGER -> context.il.add(VarInsnNode(Opcodes.ISTORE, symbol.index))
+            Types.STRING -> context.il.add(VarInsnNode(Opcodes.ASTORE, symbol.index))
         }
     }
 

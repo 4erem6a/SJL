@@ -12,7 +12,8 @@ class VariableExpression(val identifier: String) : Expression {
         val sym = context.symbolTable[identifier]
                 ?: throw VariableUsedWithoutBeingDeclaredException(identifier)
         when (sym.type) {
-            Types.NUMBER -> context.il.add(VarInsnNode(Opcodes.DLOAD, sym.index))
+            Types.DOUBLE -> context.il.add(VarInsnNode(Opcodes.DLOAD, sym.index))
+            Types.INTEGER -> context.il.add(VarInsnNode(Opcodes.ILOAD, sym.index))
             Types.STRING -> context.il.add(VarInsnNode(Opcodes.ALOAD, sym.index))
         }
     }

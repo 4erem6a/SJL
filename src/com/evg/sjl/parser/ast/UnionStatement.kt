@@ -8,6 +8,5 @@ class UnionStatement(val statements: List<Statement>) : Statement {
         for (stmt in statements)
             stmt.compile(context)
     }
-
     override fun accept(visitor: Visitor) = visitor.visit(this)
 }

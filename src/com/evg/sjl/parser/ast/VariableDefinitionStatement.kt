@@ -11,12 +11,16 @@ class VariableDefinitionStatement(val identifier: String, val type: Types) : Sta
     override fun compile(context: CompilationContext) {
         val symbol = context.symbolTable.register(identifier, type)
         when (type) {
-            Types.NUMBER -> {
-                context.il.add(LdcInsnNode(0.0))
+            Types.DOUBLE -> {
+                context.il.add(LdcInsnNode(type.defaultValue))
                 context.il.add(VarInsnNode(Opcodes.DSTORE, symbol.index))
             }
+            Types.INTEGER -> {
+                context.il.add(LdcInsnNode(type.defaultValue))
+                context.il.add(VarInsnNode(Opcodes.ISTORE, symbol.index))
+            }
             Types.STRING -> {
-                context.il.add(LdcInsnNode(""))
+                context.il.add(LdcInsnNode(type.defaultValue))
                 context.il.add(VarInsnNode(Opcodes.ASTORE, symbol.index))
             }
         }

@@ -16,21 +16,36 @@ class BinaryExpression(val operation: BinaryOperations,
         val lt = context.typeInference.getType(left)
         val rt = context.typeInference.getType(right)
         when (lt) {
-            Types.NUMBER -> {
-                left.compile(context)
-                right.compile(context)
-                if (rt != Types.NUMBER)
+            Types.DOUBLE -> {
+                if (rt != Types.DOUBLE)
                     throw InvalidOperandTypesException(operation, rt, lt)
+                right.compile(context)
+                left.compile(context)
                 context.il.add(InsnNode(when (operation) {
                     BinaryOperations.ADDITION -> Opcodes.DADD
                     BinaryOperations.SUBTRACTION -> Opcodes.DSUB
                     BinaryOperations.MULTIPLICATION -> Opcodes.DMUL
                     BinaryOperations.DIVISION -> Opcodes.DDIV
                     BinaryOperations.REMAINDER -> Opcodes.DREM
+                    else -> throw InvalidOperandTypesException(operation, rt, lt)
+                }))
+            }
+            Types.INTEGER -> {
+                if (rt != Types.INTEGER)
+                    throw InvalidOperandTypesException(operation, rt, lt)
+                right.compile(context)
+                left.compile(context)
+                context.il.add(InsnNode(when (operation) {
+                    BinaryOperations.ADDITION -> Opcodes.IADD
+                    BinaryOperations.SUBTRACTION -> Opcodes.ISUB
+                    BinaryOperations.MULTIPLICATION -> Opcodes.IMUL
+                    BinaryOperations.DIVISION -> Opcodes.IDIV
+                    BinaryOperations.REMAINDER -> Opcodes.IREM
+                    else -> throw InvalidOperandTypesException(operation, rt, lt)
                 }))
             }
             Types.STRING -> {
-                if (rt == Types.NUMBER || rt == Types.STRING) when (operation) {
+                when (operation) {
                     BinaryOperations.ADDITION -> {
                         context.il.add(TypeInsnNode(Opcodes.NEW, "java/lang/StringBuilder"))
                         context.il.add(InsnNode(Opcodes.DUP))
@@ -38,9 +53,12 @@ class BinaryExpression(val operation: BinaryOperations,
                         left.compile(context)
                         context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
                         right.compile(context)
-                        if (rt == Types.NUMBER)
-                            context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(D)Ljava/lang/StringBuilder;", false))
-                        else context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
+                        when (rt) {
+                            Types.DOUBLE -> context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(D)Ljava/lang/StringBuilder;", false))
+                            Types.INTEGER -> context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;", false))
+                            Types.STRING -> context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
+                            else -> context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;", false))
+                        }
                         context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false))
                     }
                     else -> throw InvalidOperandTypesException(operation, lt, rt)

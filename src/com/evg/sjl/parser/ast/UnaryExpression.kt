@@ -13,10 +13,15 @@ class UnaryExpression(val operation: UnaryOperations,
     override fun compile(context: CompilationContext) {
         expression.compile(context)
         val type = context.typeInference.getType(expression)
-        if (type != Types.NUMBER)
-            throw InvalidOperandTypesException(operation, type)
-        if (expression == UnaryOperations.NEGATION)
-            context.il.add(InsnNode(Opcodes.DNEG))
+        when (type) {
+            Types.DOUBLE -> when (expression) {
+                UnaryOperations.NEGATION -> context.il.add(InsnNode(Opcodes.DNEG))
+            }
+            Types.INTEGER -> when (expression) {
+                UnaryOperations.NEGATION -> context.il.add(InsnNode(Opcodes.INEG))
+            }
+            else -> throw InvalidOperandTypesException(operation, type)
+        }
     }
 
     override fun accept(visitor: Visitor) = visitor.visit(this)
