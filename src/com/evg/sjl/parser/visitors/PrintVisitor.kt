@@ -3,7 +3,8 @@ package com.evg.sjl.parser.visitors
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations.NEGATION
 import com.evg.sjl.parser.ast.*
-import com.evg.sjl.values.NumberValue
+import com.evg.sjl.values.DoubleValue
+import com.evg.sjl.values.IntegerValue
 import com.evg.sjl.values.StringValue
 import com.evg.sjl.values.Types
 
@@ -24,8 +25,6 @@ class PrintVisitor : Visitor {
         result.append("print")
         if (statement.newLine)
             result.append("ln")
-        if (statement.charMode)
-            result.append(" char")
         result.append(" ")
         statement.expression.accept(this)
         result.appendln()
@@ -33,10 +32,7 @@ class PrintVisitor : Visitor {
 
     override fun visit(statement: VariableDefinitionStatement) {
         result.append("$${statement.identifier} : ")
-        result.append(when (statement.type) {
-            Types.NUMBER -> "number"
-            Types.STRING -> "string"
-        })
+        result.append(type(statement.type))
         result.appendln()
     }
 
@@ -64,7 +60,8 @@ class PrintVisitor : Visitor {
 
     override fun visit(expression: ValueExpression) {
         when (expression.value) {
-            is NumberValue -> result.append(expression.value.value)
+            is DoubleValue -> result.append(expression.value.value)
+            is IntegerValue -> result.append(expression.value.value)
             is StringValue -> result.append("\"${expression.value.value}\"")
         }
     }
@@ -95,7 +92,13 @@ class PrintVisitor : Visitor {
 
     override fun visit(expression: InputExpression) {
         result.append("input")
-        if (expression.charMode)
-            result.append(" char")
+        result.append(':')
+        result.append(type(expression.type))
+    }
+
+    fun type(type: Types): String = when (type) {
+        Types.INTEGER -> "integer"
+        Types.DOUBLE -> "double"
+        Types.STRING -> "string"
     }
 }
