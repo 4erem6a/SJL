@@ -9,7 +9,7 @@ class SymbolTable {
             val index = when {
                 symbols.isEmpty() -> 1
                 else -> symbols.values.last().index +
-                        if (symbols.values.last().type == Types.NUMBER)
+                        if (symbols.values.last().type == Types.DOUBLE)
                             2
                         else 1
             }
