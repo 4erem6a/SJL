@@ -33,7 +33,7 @@ fun main(argv: Array<String>) {
             return
         }
     } else {
-        println("Either source file or source code must be specified")
+        println("Either a source file or a source code must be specified")
         return
     }
 
@@ -47,7 +47,7 @@ fun main(argv: Array<String>) {
         }
 
         if (args.printTokens)
-            println("Token list:\n${sjl.tokenize().map { it.toString() + '\n' }}end.")
+            println("Token list:\n${sjl.tokenize().joinToString("\n")}end.")
 
         if (args.printAST)
             println("Abstract Syntax tree:\n${sjl.parse()}\nend.")
