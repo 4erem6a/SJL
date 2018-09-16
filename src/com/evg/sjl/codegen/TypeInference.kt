@@ -36,4 +36,8 @@ class TypeInferenceVisitor(val st: SymbolTable) : Visitor {
     override fun visit(expression: InputExpression) {
         type = expression.type
     }
+
+    override fun visit(expression: CastExpression) {
+        type = expression.type
+    }
 }
