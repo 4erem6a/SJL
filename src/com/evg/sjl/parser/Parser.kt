@@ -6,6 +6,7 @@ import com.evg.sjl.lexer.Token
 import com.evg.sjl.lexer.TokenTypes
 import com.evg.sjl.lexer.TokenTypes.*
 import com.evg.sjl.lib.BinaryOperations.*
+import com.evg.sjl.lib.UnaryOperations.BITWISE_NEGATION
 import com.evg.sjl.lib.UnaryOperations.NEGATION
 import com.evg.sjl.parser.ast.*
 import com.evg.sjl.values.DoubleValue
@@ -82,7 +83,48 @@ class Parser(private val tokens: List<Token>) {
         return UnionStatement(statements)
     }
 
-    private fun expression(): Expression = additive()
+    private fun expression(): Expression = bitwiseOr()
+
+
+    private fun bitwiseOr(): Expression {
+        var res = bitwiseXor()
+        loop@ while (true) res = when {
+            match(VB) -> BinaryExpression(BITWISE_OR, res, bitwiseXor())
+            else -> break@loop
+        }
+        return res
+    }
+
+    private fun bitwiseXor(): Expression {
+        var res = bitwiseAnd()
+        loop@ while (true) res = when {
+            match(CR) -> BinaryExpression(BITWISE_XOR, res, bitwiseAnd())
+            else -> break@loop
+        }
+        return res
+    }
+
+
+    private fun bitwiseAnd(): Expression {
+        var res = shifts()
+        loop@ while (true) res = when {
+            match(AM) -> BinaryExpression(BITWISE_AND, res, shifts())
+            else -> break@loop
+        }
+        return res
+    }
+
+
+    private fun shifts(): Expression {
+        var res = additive()
+        loop@ while (true) res = when {
+            match(LALA) -> BinaryExpression(LEFT_SHIFT, res, additive())
+            match(RARA) -> BinaryExpression(RIGHT_SHIFT, res, additive())
+            match(RARARA) -> BinaryExpression(UNSIGNED_RIGHT_SHIFT, res, additive())
+            else -> break@loop
+        }
+        return res
+    }
 
     private fun additive(): Expression {
         var res = multiplicative()
@@ -105,11 +147,13 @@ class Parser(private val tokens: List<Token>) {
         return res
     }
 
-    private fun unary(): Expression {
-        if (match(MN))
-            return UnaryExpression(NEGATION, primary())
-        match(PL)
-        return primary()
+    private fun unary(): Expression = when {
+        match(MN) -> UnaryExpression(NEGATION, primary())
+        match(TL) -> UnaryExpression(BITWISE_NEGATION, primary())
+        else -> {
+            match(PL)
+            primary()
+        }
     }
 
     private fun primary(): Expression {
