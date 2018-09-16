@@ -1,7 +1,7 @@
 package com.evg.sjl.parser.visitors
 
 import com.evg.sjl.lib.BinaryOperations.*
-import com.evg.sjl.lib.UnaryOperations.NEGATION
+import com.evg.sjl.lib.UnaryOperations.*
 import com.evg.sjl.parser.ast.*
 import com.evg.sjl.values.DoubleValue
 import com.evg.sjl.values.IntegerValue
@@ -75,14 +75,22 @@ class PrintVisitor : Visitor {
             MULTIPLICATION -> " * "
             DIVISION -> " / "
             REMAINDER -> " % "
+            RIGHT_SHIFT -> " >> "
+            LEFT_SHIFT -> " << "
+            UNSIGNED_RIGHT_SHIFT -> " >>> "
+            BITWISE_AND -> " & "
+            BITWISE_XOR -> " ^ "
+            BITWISE_OR -> " | "
         })
         expression.right.accept(this)
         result.append(")")
     }
 
     override fun visit(expression: UnaryExpression) {
-        if (expression.operation == NEGATION)
-            result.append("-")
+        when (expression.operation) {
+            NEGATION -> result.append("-")
+            BITWISE_NEGATION -> result.append("^")
+        }
         expression.expression.accept(this)
     }
 
