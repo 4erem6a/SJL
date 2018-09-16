@@ -41,7 +41,12 @@ class BinaryExpression(val operation: BinaryOperations,
                     BinaryOperations.MULTIPLICATION -> Opcodes.IMUL
                     BinaryOperations.DIVISION -> Opcodes.IDIV
                     BinaryOperations.REMAINDER -> Opcodes.IREM
-                    else -> throw InvalidOperandTypesException(operation, rt, lt)
+                    BinaryOperations.LEFT_SHIFT -> Opcodes.ISHL
+                    BinaryOperations.RIGHT_SHIFT -> Opcodes.ISHR
+                    BinaryOperations.UNSIGNED_RIGHT_SHIFT -> Opcodes.IUSHR
+                    BinaryOperations.BITWISE_AND -> Opcodes.IAND
+                    BinaryOperations.BITWISE_XOR -> Opcodes.IXOR
+                    BinaryOperations.BITWISE_OR -> Opcodes.IOR
                 }))
             }
             Types.STRING -> {
@@ -57,7 +62,6 @@ class BinaryExpression(val operation: BinaryOperations,
                             Types.DOUBLE -> context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(D)Ljava/lang/StringBuilder;", false))
                             Types.INTEGER -> context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;", false))
                             Types.STRING -> context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
-                            else -> context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;", false))
                         }
                         context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false))
                     }
