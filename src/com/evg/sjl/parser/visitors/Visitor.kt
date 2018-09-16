@@ -36,4 +36,8 @@ interface Visitor {
     fun visit(expression: VariableExpression) {}
 
     fun visit(expression: InputExpression) {}
+
+    fun visit(expression: CastExpression) {
+        expression.expression.accept(this)
+    }
 }
