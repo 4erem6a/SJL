@@ -7,9 +7,16 @@ enum class BinaryOperations : Operations {
     SUBTRACTION,
     MULTIPLICATION,
     DIVISION,
-    REMAINDER
+    REMAINDER,
+    RIGHT_SHIFT,
+    LEFT_SHIFT,
+    UNSIGNED_RIGHT_SHIFT,
+    BITWISE_AND,
+    BITWISE_XOR,
+    BITWISE_OR
 }
 
 enum class UnaryOperations : Operations {
-    NEGATION
+    NEGATION,
+    BITWISE_NEGATION
 }
