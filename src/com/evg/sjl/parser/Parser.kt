@@ -137,14 +137,28 @@ class Parser(private val tokens: List<Token>) {
     }
 
     private fun multiplicative(): Expression {
-        var res = unary()
+        var res = cast()
         loop@ while (true) res = when {
-            match(ST) -> BinaryExpression(MULTIPLICATION, res, unary())
-            match(SL) -> BinaryExpression(DIVISION, res, unary())
-            match(PR) -> BinaryExpression(REMAINDER, res, unary())
+            match(ST) -> BinaryExpression(MULTIPLICATION, res, cast())
+            match(SL) -> BinaryExpression(DIVISION, res, cast())
+            match(PR) -> BinaryExpression(REMAINDER, res, cast())
             else -> break@loop
         }
         return res
+    }
+
+    private fun cast(): Expression = when {
+        match(LP) -> {
+            val type = type()
+            if (type == null) {
+                position--
+                unary()
+            } else {
+                consume(RP)
+                CastExpression(type, unary())
+            }
+        }
+        else -> unary()
     }
 
     private fun unary(): Expression = when {
