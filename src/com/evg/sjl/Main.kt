@@ -74,8 +74,8 @@ private class Args {
     var measureExecTime = false
     @Parameter(names = ["-t", "--tokens"], description = "Print token list", order = 4)
     var printTokens = false
-    @Parameter(names = ["-l", "--listing"], description = "Print program listing", order = 6)
+    @Parameter(names = ["-l", "--listing"], description = "Print program listing", order = 5)
     var printListing = false
-    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 7)
+    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 6)
     var help = false
 }
