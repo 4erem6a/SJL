@@ -34,6 +34,6 @@ class TypeInferenceVisitor(val st: SymbolTable) : Visitor {
     }
 
     override fun visit(expression: InputExpression) {
-        type = Types.NUMBER
+        type = expression.type
     }
 }
