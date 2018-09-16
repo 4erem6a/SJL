@@ -39,7 +39,7 @@ class Lexer(private val source: String) {
             current = skip()
         }
         skip()
-        add(Token(STRING, buffer, pos))
+        add(Token(L_STRING, buffer, pos))
     }
 
     private fun character() {
@@ -47,9 +47,9 @@ class Lexer(private val source: String) {
         skip()
         val char = peek()
         if (skip() != '\'')
-            throw InvalidTokenDefinitionException(NUMBER, pos)
+            throw InvalidTokenDefinitionException(L_DOUBLE, pos)
         skip()
-        add(Token(NUMBER, char.toInt().toString(), pos))
+        add(Token(L_DOUBLE, char.toInt().toString(), pos))
     }
 
     private fun comment() {
@@ -65,14 +65,16 @@ class Lexer(private val source: String) {
             when {
                 current.isDigit() -> buffer += current
                 current == '.' -> if (current in buffer)
-                    throw InvalidTokenDefinitionException(NUMBER, pos)
+                    throw InvalidTokenDefinitionException(L_DOUBLE, pos)
                 else buffer += current
                 else -> if (current != '_')
                     break@loop
             }
             current = skip()
         }
-        add(Token(NUMBER, buffer, pos))
+        if ('.' in buffer)
+            add(Token(L_DOUBLE, buffer, pos))
+        else add(Token(L_INTEGER, buffer, pos))
     }
 
     private fun identifier() {
