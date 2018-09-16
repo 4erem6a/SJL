@@ -41,7 +41,8 @@ fun main(argv: Array<String>) {
         val sjl = SJL(source)
 
         if (args.execute) {
-            val execTime = measureTimeMillis { sjl.compile().run() }
+            val runnable = sjl.compile()
+            val execTime = measureTimeMillis { runnable.run() }
             if (args.measureExecTime)
                 println("\nExecution took ${execTime}ms")
         }
