@@ -2,8 +2,10 @@ package com.evg.sjl.lexer
 
 enum class TokenTypes {
     IDENTIFIER,         //\$[a-zA-Z_][\w]*
-    NUMBER,             //[0-9]+(?:\.[0-9]+)?
-    STRING,             //".*"
+
+    L_STRING,           //".*"
+    L_INTEGER,          //[0-9]+
+    L_DOUBLE,           //[0-9]+\.[0-9]+
 
     EQ,                 //=
     SL,                 ///
@@ -26,8 +28,9 @@ enum class TokenTypes {
     CHAR,               //char
     INPUT,              //input
 
-    T_NUMBER,           //number
     T_STRING,           //string
+    T_INTEGER,          //integer
+    T_DOUBLE,           //double
 
     EOF
 }
