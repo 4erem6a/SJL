@@ -13,6 +13,16 @@ enum class TokenTypes {
     MN,                 //-
     PL,                 //+
     PR,                 //%
+
+    LALA,               //<<
+    RARA,               //>>
+    RARARA,             //>>>
+
+    VB,                 //|
+    AM,                 //&
+    CR,                 //^
+    TL,                 //~
+
     CL,                 //:
     CM,                 //,
     SC,                 //;
