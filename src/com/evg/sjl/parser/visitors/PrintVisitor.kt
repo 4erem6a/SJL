@@ -104,6 +104,11 @@ class PrintVisitor : Visitor {
         result.append(type(expression.type))
     }
 
+    override fun visit(expression: CastExpression) {
+        result.append("(${expression.type.toString().toLowerCase()})")
+        expression.expression.accept(this)
+    }
+
     fun type(type: Types): String = when (type) {
         Types.INTEGER -> "integer"
         Types.DOUBLE -> "double"
