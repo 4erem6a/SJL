@@ -6,7 +6,7 @@ import com.evg.sjl.values.Types
 import jdk.internal.org.objectweb.asm.Opcodes
 import jdk.internal.org.objectweb.asm.tree.VarInsnNode
 
-class AssignmentStatement(val identifier: String, val expression: Expression) : Statement {
+class AssignmentStatement(val identifier: String, var expression: Expression) : Statement {
     override fun compile(context: CompilationContext) {
         expression.compile(context)
         val symbol = (if (identifier in context.symbolTable.symbols)
@@ -15,7 +15,7 @@ class AssignmentStatement(val identifier: String, val expression: Expression) : 
                 ?: return
         when (context.typeInference.getType(expression)) {
             Types.DOUBLE -> context.il.add(VarInsnNode(Opcodes.DSTORE, symbol.index))
-            Types.INTEGER -> context.il.add(VarInsnNode(Opcodes.ISTORE, symbol.index))
+            Types.INTEGER, Types.BOOLEAN -> context.il.add(VarInsnNode(Opcodes.ISTORE, symbol.index))
             Types.STRING -> context.il.add(VarInsnNode(Opcodes.ASTORE, symbol.index))
         }
     }

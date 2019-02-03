@@ -40,4 +40,10 @@ interface Visitor {
     fun visit(expression: CastExpression) {
         expression.expression.accept(this)
     }
+
+    fun visit(statement: IfStatement) {
+        statement.condition.accept(this)
+        statement.ifStatement.accept(this)
+        statement.elseStatement?.accept(this)
+    }
 }

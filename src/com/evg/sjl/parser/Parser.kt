@@ -6,13 +6,9 @@ import com.evg.sjl.lexer.Token
 import com.evg.sjl.lexer.TokenTypes
 import com.evg.sjl.lexer.TokenTypes.*
 import com.evg.sjl.lib.BinaryOperations.*
-import com.evg.sjl.lib.UnaryOperations.BITWISE_NEGATION
-import com.evg.sjl.lib.UnaryOperations.NEGATION
+import com.evg.sjl.lib.UnaryOperations.*
 import com.evg.sjl.parser.ast.*
-import com.evg.sjl.values.DoubleValue
-import com.evg.sjl.values.IntegerValue
-import com.evg.sjl.values.StringValue
-import com.evg.sjl.values.Types
+import com.evg.sjl.values.*
 
 class Parser(private val tokens: List<Token>) {
     companion object {
@@ -33,6 +29,7 @@ class Parser(private val tokens: List<Token>) {
         lookMatch(0, PRINT) || lookMatch(0, PRINTLN) -> printStatement()
         lookMatch(0, IDENTIFIER) && lookMatch(1, CL) -> variableDefinitionStatement()
         lookMatch(0, IDENTIFIER) && (lookMatch(1, EQ) || lookMatch(1, CM))  -> assignmentStatement()
+        match(IF) -> ifStatement()
         match(LC) -> {
             val statements = ArrayList<Statement>()
             while (!match(RC))
@@ -40,6 +37,17 @@ class Parser(private val tokens: List<Token>) {
             UnionStatement(statements)
         }
         else -> ExpressionStatement(expression())
+    }
+
+    private fun ifStatement(): Statement {
+        consume(LP)
+        val condition = expression()
+        consume(RP)
+        val ifStatement = statement()
+        val elseStatement = if (match(ELSE))
+            statement()
+        else null
+        return IfStatement(condition, ifStatement, elseStatement)
     }
 
     private fun printStatement(): Statement {
@@ -83,8 +91,34 @@ class Parser(private val tokens: List<Token>) {
         return UnionStatement(statements)
     }
 
-    private fun expression(): Expression = bitwiseOr()
+    private fun expression(): Expression = Or()
 
+    private fun Or(): Expression {
+        var res = xor()
+        loop@ while (true) res = when {
+            match(VBVB) -> BinaryExpression(BOOLEAN_OR, res, xor())
+            else -> break@loop
+        }
+        return res
+    }
+
+    private fun xor(): Expression {
+        var res = and()
+        loop@ while (true) res = when {
+            match(CRCR) -> BinaryExpression(BOOLEAN_XOR, res, and())
+            else -> break@loop
+        }
+        return res
+    }
+
+    private fun and(): Expression {
+        var res = bitwiseOr()
+        loop@ while (true) res = when {
+            match(AMAM) -> BinaryExpression(BOOLEAN_AND, res, bitwiseOr())
+            else -> break@loop
+        }
+        return res
+    }
 
     private fun bitwiseOr(): Expression {
         var res = bitwiseXor()
@@ -104,16 +138,36 @@ class Parser(private val tokens: List<Token>) {
         return res
     }
 
-
     private fun bitwiseAnd(): Expression {
-        var res = shifts()
+        var res = equality()
         loop@ while (true) res = when {
-            match(AM) -> BinaryExpression(BITWISE_AND, res, shifts())
+            match(AM) -> BinaryExpression(BITWISE_AND, res, equality())
             else -> break@loop
         }
         return res
     }
 
+    private fun equality(): Expression {
+        var res = relational()
+        loop@ while (true) res = when {
+            match(EQEQ) -> BinaryExpression(EQUALS, res, relational())
+            match(EXEQ) -> BinaryExpression(NOT_EQUALS, res, relational())
+            else -> break@loop
+        }
+        return res
+    }
+
+    private fun relational(): Expression {
+        var res = shifts()
+        loop@ while (true) res = when {
+            match(LA) -> BinaryExpression(LOWER_THAN, res, shifts())
+            match(RA) -> BinaryExpression(GREATER_THAN, res, shifts())
+            match(LAEQ) -> BinaryExpression(EQUALS_OR_LOWER_THAN, res, shifts())
+            match(RAEQ) -> BinaryExpression(EQUALS_OR_GREATER_THAN, res, shifts())
+            else -> break@loop
+        }
+        return res
+    }
 
     private fun shifts(): Expression {
         var res = additive()
@@ -164,6 +218,7 @@ class Parser(private val tokens: List<Token>) {
     private fun unary(): Expression = when {
         match(MN) -> UnaryExpression(NEGATION, primary())
         match(TL) -> UnaryExpression(BITWISE_NEGATION, primary())
+        match(EX) -> UnaryExpression(BOOLEAN_NEGATION, primary())
         else -> {
             match(PL)
             primary()
@@ -178,6 +233,10 @@ class Parser(private val tokens: List<Token>) {
             return ValueExpression(IntegerValue(current.value.toInt()))
         if (match(L_STRING))
             return ValueExpression(StringValue(current.value))
+        if (match(TRUE))
+            return ValueExpression(BooleanValue(true))
+        if (match(FALSE))
+            return ValueExpression(BooleanValue(false))
         if (match(IDENTIFIER))
             return VariableExpression(current.value)
         if (match(INPUT))
@@ -200,6 +259,7 @@ class Parser(private val tokens: List<Token>) {
         match(T_DOUBLE) -> Types.DOUBLE
         match(T_INTEGER) -> Types.INTEGER
         match(T_STRING) -> Types.STRING
+        match(T_BOOLEAN) -> Types.BOOLEAN
         else -> null
     }
 

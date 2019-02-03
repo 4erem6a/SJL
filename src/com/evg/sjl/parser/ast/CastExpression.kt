@@ -5,10 +5,9 @@ import com.evg.sjl.exceptions.InvalidCastException
 import com.evg.sjl.parser.visitors.Visitor
 import com.evg.sjl.values.Types
 import jdk.internal.org.objectweb.asm.Opcodes.*
-import jdk.internal.org.objectweb.asm.tree.InsnNode
-import jdk.internal.org.objectweb.asm.tree.MethodInsnNode
+import jdk.internal.org.objectweb.asm.tree.*
 
-class CastExpression(val type: Types, val expression: Expression) : Expression {
+class CastExpression(var type: Types, var expression: Expression) : Expression {
     override fun compile(context: CompilationContext) {
         expression.compile(context)
         val tFrom = context.typeInference.getType(expression)
@@ -16,12 +15,14 @@ class CastExpression(val type: Types, val expression: Expression) : Expression {
             Types.INTEGER -> when (type) {
                 Types.INTEGER -> return
                 Types.DOUBLE -> context.il.add(InsnNode(I2D))
-                Types.STRING ->
-                        context.il.add(MethodInsnNode(INVOKESTATIC,
-                                "java/lang/String",
-                                "valueOf",
-                                "(I)Ljava/lang/String;",
-                                false))
+                Types.STRING -> context.il.add(MethodInsnNode(
+                        INVOKESTATIC,
+                        "java/lang/String",
+                        "valueOf",
+                        "(I)Ljava/lang/String;",
+                        false
+                ))
+                Types.BOOLEAN -> context.il.i2boolean()
             }
             Types.DOUBLE -> when (type) {
                 Types.DOUBLE -> return
@@ -32,10 +33,36 @@ class CastExpression(val type: Types, val expression: Expression) : Expression {
                             "valueOf",
                             "(D)Ljava/lang/String;",
                             false))
+                Types.BOOLEAN -> with(context.il) {
+                    add(InsnNode(D2I))
+                    i2boolean()
+                }
             }
             Types.STRING -> if (tFrom != Types.STRING)
                 throw InvalidCastException(tFrom, type)
+            Types.BOOLEAN -> when (type) {
+                Types.BOOLEAN, Types.INTEGER -> return
+                Types.DOUBLE -> context.il.add(InsnNode(I2D))
+                Types.STRING -> context.il.add(MethodInsnNode(
+                        INVOKESTATIC,
+                        "java/lang/String",
+                        "valueOf",
+                        "(Z)Ljava/lang/String;",
+                        false
+                ))
+            }
         }
+    }
+
+    private fun InsnList.i2boolean() {
+        val lFalse = LabelNode()
+        val lEnd = LabelNode()
+        add(JumpInsnNode(IFNE, lFalse))
+        add(InsnNode(ICONST_1))
+        add(JumpInsnNode(GOTO, lEnd))
+        add(lFalse)
+        add(InsnNode(ICONST_0))
+        add(lEnd)
     }
 
     override fun accept(visitor: Visitor) = visitor.visit(this)

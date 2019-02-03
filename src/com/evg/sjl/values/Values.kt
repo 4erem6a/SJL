@@ -19,8 +19,14 @@ class StringValue(val value: String) : Value {
         get() = Types.STRING
 }
 
+class BooleanValue(val value: Boolean) : Value {
+    override val type: Types
+        get() = Types.BOOLEAN
+}
+
 enum class Types(val defaultValue: Any) {
     INTEGER(0),
     DOUBLE(0.0),
-    STRING("")
+    STRING(""),
+    BOOLEAN(0)
 }

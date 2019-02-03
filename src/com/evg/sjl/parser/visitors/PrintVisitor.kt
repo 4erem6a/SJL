@@ -3,10 +3,7 @@ package com.evg.sjl.parser.visitors
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations.*
 import com.evg.sjl.parser.ast.*
-import com.evg.sjl.values.DoubleValue
-import com.evg.sjl.values.IntegerValue
-import com.evg.sjl.values.StringValue
-import com.evg.sjl.values.Types
+import com.evg.sjl.values.*
 
 class PrintVisitor : Visitor {
     private val result = StringBuilder()
@@ -50,19 +47,20 @@ class PrintVisitor : Visitor {
         indentLevel++
         result.appendln("{")
         for (stmt in statement.statements) {
-            (0 until indentLevel).forEach { result.append('\t') }
+            indent()
             stmt.accept(this)
         }
         indentLevel--
-        (0 until indentLevel).forEach { result.append('\t') }
+        indent()
         result.appendln("}")
     }
 
     override fun visit(expression: ValueExpression) {
         when (expression.value) {
-            is DoubleValue -> result.append(expression.value.value)
-            is IntegerValue -> result.append(expression.value.value)
-            is StringValue -> result.append("\"${expression.value.value}\"")
+            is DoubleValue -> result.append((expression.value as DoubleValue).value)
+            is IntegerValue -> result.append((expression.value as IntegerValue).value)
+            is StringValue -> result.append("\"${(expression.value as StringValue).value}\"")
+            is BooleanValue -> result.append(if ((expression.value as BooleanValue).value) "true" else "false")
         }
     }
 
@@ -81,6 +79,15 @@ class PrintVisitor : Visitor {
             BITWISE_AND -> " & "
             BITWISE_XOR -> " ^ "
             BITWISE_OR -> " | "
+            EQUALS -> " == "
+            LOWER_THAN -> " < "
+            GREATER_THAN -> " > "
+            EQUALS_OR_LOWER_THAN -> " <= "
+            EQUALS_OR_GREATER_THAN -> " >= "
+            BOOLEAN_AND -> " && "
+            BOOLEAN_OR -> " || "
+            BOOLEAN_XOR -> " ^^ "
+            NOT_EQUALS -> " != "
         })
         expression.right.accept(this)
         result.append(")")
@@ -89,7 +96,8 @@ class PrintVisitor : Visitor {
     override fun visit(expression: UnaryExpression) {
         when (expression.operation) {
             NEGATION -> result.append("-")
-            BITWISE_NEGATION -> result.append("^")
+            BITWISE_NEGATION -> result.append("~")
+            BOOLEAN_NEGATION -> result.append("!")
         }
         expression.expression.accept(this)
     }
@@ -113,5 +121,31 @@ class PrintVisitor : Visitor {
         Types.INTEGER -> "integer"
         Types.DOUBLE -> "double"
         Types.STRING -> "string"
+        Types.BOOLEAN -> "boolean"
+    }
+
+    override fun visit(statement: IfStatement) {
+        result.append("if (")
+        statement.condition.accept(this)
+        result.append(")")
+        if (statement.ifStatement !is UnionStatement) {
+            result.append("\n")
+            indent(1)
+            indentLevel++
+        } else result.append(" ")
+        statement.ifStatement.accept(this)
+        if (statement.ifStatement !is UnionStatement)
+            indentLevel--
+        if (statement.elseStatement == null)
+            return
+        indent()
+        result.append("else ")
+        statement.elseStatement?.accept(this)
+    }
+
+    private fun indent(offset: Int = 0) {
+        repeat((0 until indentLevel + offset).count()) {
+            result.append("\t")
+        }
     }
 }

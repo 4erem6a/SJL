@@ -10,7 +10,10 @@ class VariableUsedWithoutBeingDeclaredException(identifier: String)
     : CompileException("Variable $$identifier used without being declared")
 
 class InvalidOperandTypesException(operation: Operations, vararg operandTypes: Types)
-    : CompileException("Unable to perform operation $operation with following operand types: ${operandTypes.reversed().joinToString(", ")}")
+    : CompileException("Unable to perform operation $operation with following operand types: ${operandTypes.joinToString(", ")}")
 
 class InvalidCastException(from: Types, to: Types)
-    : CompileException("Invalid type cast $from -> $to.")
+    : CompileException("Invalid type cast $from -> $to")
+
+class InvalidValueTypeExveption(type: Types)
+    : CompileException("Invalid value type: $type")

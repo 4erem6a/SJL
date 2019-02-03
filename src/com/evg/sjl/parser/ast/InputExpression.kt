@@ -6,7 +6,6 @@ import com.evg.sjl.parser.visitors.Visitor
 import com.evg.sjl.values.Types
 import jdk.internal.org.objectweb.asm.Opcodes
 import jdk.internal.org.objectweb.asm.tree.FieldInsnNode
-import jdk.internal.org.objectweb.asm.tree.InsnNode
 import jdk.internal.org.objectweb.asm.tree.MethodInsnNode
 import jdk.internal.org.objectweb.asm.tree.VarInsnNode
 
@@ -21,6 +20,8 @@ class InputExpression(val type: Types) : Expression {
                 context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/util/Scanner", "nextInt", "()I", false))
             Types.STRING ->
                 context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/util/Scanner", "nextLine", "()Ljava/lang/String;", false))
+            Types.BOOLEAN ->
+                context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/util/Scanner", "nextBoolean", "()Z", false))
         }
     }
 

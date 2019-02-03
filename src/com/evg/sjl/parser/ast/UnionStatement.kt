@@ -3,7 +3,7 @@ package com.evg.sjl.parser.ast
 import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.parser.visitors.Visitor
 
-class UnionStatement(val statements: List<Statement>) : Statement {
+class UnionStatement(var statements: List<Statement>) : Statement {
     override fun compile(context: CompilationContext) {
         for (stmt in statements)
             stmt.compile(context)

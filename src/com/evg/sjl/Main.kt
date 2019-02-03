@@ -21,6 +21,11 @@ fun main(argv: Array<String>) {
         jcommander.parse(*argv)
     } catch (e: Exception) { }
 
+    if (args.version) {
+        println("SJL version: ${SJL.VERSION}")
+        return
+    }
+
     if (args.help)
         jcommander.usage()
 
@@ -77,6 +82,8 @@ private class Args {
     var printTokens = false
     @Parameter(names = ["-l", "--listing"], description = "Print program listing", order = 5)
     var printListing = false
-    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 6)
+    @Parameter(names = ["-v", "--version"], description = "Display compiler version", order = 6)
+    var version = false
+    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 7)
     var help = false
 }

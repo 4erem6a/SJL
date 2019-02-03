@@ -10,6 +10,11 @@ object Keywords {
             "input" to INPUT,
             "double" to T_DOUBLE,
             "integer" to T_INTEGER,
-            "string" to T_STRING
+            "string" to T_STRING,
+            "boolean" to T_BOOLEAN,
+            "true" to TRUE,
+            "false" to FALSE,
+            "if" to IF,
+            "else" to ELSE
     )
 }

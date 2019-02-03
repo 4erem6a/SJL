@@ -7,7 +7,7 @@ import jdk.internal.org.objectweb.asm.Opcodes
 import jdk.internal.org.objectweb.asm.tree.LdcInsnNode
 import jdk.internal.org.objectweb.asm.tree.VarInsnNode
 
-class VariableDefinitionStatement(val identifier: String, val type: Types) : Statement {
+class VariableDefinitionStatement(var identifier: String, var type: Types) : Statement {
     override fun compile(context: CompilationContext) {
         val symbol = context.symbolTable.register(identifier, type)
         when (type) {
@@ -15,7 +15,7 @@ class VariableDefinitionStatement(val identifier: String, val type: Types) : Sta
                 context.il.add(LdcInsnNode(type.defaultValue))
                 context.il.add(VarInsnNode(Opcodes.DSTORE, symbol.index))
             }
-            Types.INTEGER -> {
+            Types.INTEGER, Types.BOOLEAN -> {
                 context.il.add(LdcInsnNode(type.defaultValue))
                 context.il.add(VarInsnNode(Opcodes.ISTORE, symbol.index))
             }

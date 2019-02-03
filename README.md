@@ -28,3 +28,18 @@ $a = input : integer
 $b = input : string
 println (string)$a + $b
 ```
+```
+# Some if/else statements
+$a = input : double
+if ($a > 3.14)
+    println "A"
+else if ($a >= 10)
+    println "B"
+else println "C"
+```
+```
+# Some autocasts
+println 2 + 3.14 / true
+# Same as
+println 2 + (integer)(3.14 + (double)true)
+```

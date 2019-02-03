@@ -23,6 +23,20 @@ enum class TokenTypes {
     CR,                 //^
     TL,                 //~
 
+    EQEQ,               //==
+    EXEQ,               //!=
+
+    LA,                 //<
+    RA,                 //>
+    LAEQ,               //<=
+    RAEQ,               //>=
+
+    VBVB,               //||
+    AMAM,               //&&
+    CRCR,               //^^
+
+    EX,                 //!
+
     CL,                 //:
     CM,                 //,
     SC,                 //;
@@ -37,10 +51,16 @@ enum class TokenTypes {
     PRINTLN,            //println
     CHAR,               //char
     INPUT,              //input
+    IF,                 //if
+    ELSE,               //else
+
+    TRUE,               //true
+    FALSE,              //false
 
     T_STRING,           //string
     T_INTEGER,          //integer
     T_DOUBLE,           //double
+    T_BOOLEAN,          //boolean
 
     EOF
 }

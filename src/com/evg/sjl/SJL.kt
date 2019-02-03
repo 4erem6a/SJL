@@ -9,8 +9,14 @@ import com.evg.sjl.lexer.Token
 import com.evg.sjl.parser.Parser
 import com.evg.sjl.parser.ast.Node
 import com.evg.sjl.parser.visitors.PrintVisitor
+import sun.misc.Version
 
 class SJL(private val source: String) {
+    companion object {
+        @JvmStatic
+        val VERSION = "1.3.0"
+    }
+
     @Throws(SJLException::class)
     fun tokenize(): List<Token> = Lexer(source).tokenize()
 
@@ -20,7 +26,10 @@ class SJL(private val source: String) {
     @Throws(SJLException::class)
     fun compile(): Runnable {
         try {
-            return ByteCodeLoader.loadClass(ByteCodeGenerator(parse()).generate()).newInstance() as Runnable
+            val ast = parse()
+            val bytecode = ByteCodeGenerator(ast).generate()
+            val clazz = ByteCodeLoader.loadClass(bytecode)
+            return clazz.newInstance() as Runnable
         } catch (e: SJLException) {
             throw e
         } catch (e: Exception) {
