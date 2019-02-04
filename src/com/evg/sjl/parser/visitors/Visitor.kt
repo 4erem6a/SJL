@@ -46,4 +46,8 @@ interface Visitor {
         statement.ifStatement.accept(this)
         statement.elseStatement?.accept(this)
     }
+
+    fun visit(statement: BlockStatement) {
+        statement.statements.forEach { it.accept(this) }
+    }
 }
