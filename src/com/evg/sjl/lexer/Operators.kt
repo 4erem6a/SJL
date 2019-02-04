@@ -31,6 +31,7 @@ object Operators {
             ")" to RP,
             "{" to LC,
             "}" to RC,
+            "@" to AT,
             ":" to CL,
             "," to CM,
             ";" to SC

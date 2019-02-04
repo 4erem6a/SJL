@@ -47,6 +47,8 @@ enum class TokenTypes {
     LC,                 //{
     RC,                 //}
 
+    AT,                 //@
+
     PRINT,              //print
     PRINTLN,            //println
     CHAR,               //char
