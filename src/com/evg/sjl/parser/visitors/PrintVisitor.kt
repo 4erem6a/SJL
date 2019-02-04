@@ -41,11 +41,11 @@ class PrintVisitor : Visitor {
 
     override fun visit(statement: UnionStatement) {
         if (statement.statements.isEmpty()) {
-            result.appendln("{ }")
+            result.appendln("@{ }")
             return
         }
         indentLevel++
-        result.appendln("{")
+        result.appendln("@{")
         for (stmt in statement.statements) {
             indent()
             stmt.accept(this)
@@ -147,5 +147,21 @@ class PrintVisitor : Visitor {
         repeat((0 until indentLevel + offset).count()) {
             result.append("\t")
         }
+    }
+
+    override fun visit(statement: BlockStatement) {
+        if (statement.statements.isEmpty()) {
+            result.appendln("{ }")
+            return
+        }
+        indentLevel++
+        result.appendln("{")
+        for (stmt in statement.statements) {
+            indent()
+            stmt.accept(this)
+        }
+        indentLevel--
+        indent()
+        result.appendln("}")
     }
 }
