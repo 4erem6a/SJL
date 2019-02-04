@@ -27,9 +27,9 @@ class Parser(private val tokens: List<Token>) {
 
     private fun statement(): Statement = when {
         lookMatch(0, PRINT) || lookMatch(0, PRINTLN) -> printStatement()
-        lookMatch(0, IDENTIFIER) && lookMatch(1, CL) -> variableDefinitionStatement()
         lookMatch(0, IDENTIFIER) && (lookMatch(1, EQ) || lookMatch(1, CM))  -> assignmentStatement()
         match(IF) -> ifStatement()
+        match(LET) -> variableDefinitionStatement()
         lookMatch(0, AT) && lookMatch(1, LC) -> {
             consume(AT)
             consume(LC)
@@ -72,18 +72,13 @@ class Parser(private val tokens: List<Token>) {
 
     private fun variableDefinitionStatement(): Statement {
         val id = consume(IDENTIFIER).value
-        consume(CL)
-        val type = when {
-            match(T_DOUBLE) -> Types.DOUBLE
-            match(T_INTEGER) -> Types.INTEGER
-            match(T_STRING) -> Types.STRING
-            else -> throw UnexpectedTokenException(get(), T_DOUBLE, T_STRING)
-        }
-        if (match(EQ)) return UnionStatement(listOf(
-                VariableDefinitionStatement(id, type),
-                AssignmentStatement(id, expression())
-        ))
-        return VariableDefinitionStatement(id, type)
+        val type = if (match(CL))
+            type()
+        else null
+        val initializer = if (match(EQ))
+            expression()
+        else null
+        return VariableDefinitionStatement(id, type, initializer)
     }
 
     private fun assignmentStatement(): Statement {
