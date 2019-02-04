@@ -18,12 +18,12 @@ print $i; " * "; $i; " = "; $i * $i; 10
 ```
 ```
 # Some explicit typings
-$a : number             # = 0
-$b : string             # = ""
-$c : string = $b + $a   # = "0"
+let $a : number             # = 0
+let $b : string             # = ""
+let $c : string = $b + $a   # = "0"
 ```
 ```
-# Some type casts
+# Some explicit casts
 $a = input : integer
 $b = input : string
 println (string)$a + $b
@@ -42,4 +42,13 @@ else println "C"
 println 2 + 3.14 / true
 # Same as
 println 2 + (integer)(3.14 + (double)true)
+```
+```
+# Some scopes
+let $x = 1
+{
+    let $x = 2
+    println $x  # OUTPUT: 2
+}
+println $x      # OUTPUT: 1
 ```
