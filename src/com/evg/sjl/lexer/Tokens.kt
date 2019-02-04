@@ -55,6 +55,7 @@ enum class TokenTypes {
     INPUT,              //input
     IF,                 //if
     ELSE,               //else
+    LET,                //let
 
     TRUE,               //true
     FALSE,              //false

@@ -15,6 +15,7 @@ object Keywords {
             "true" to TRUE,
             "false" to FALSE,
             "if" to IF,
-            "else" to ELSE
+            "else" to ELSE,
+            "let" to LET
     )
 }
