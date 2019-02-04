@@ -30,11 +30,19 @@ class Parser(private val tokens: List<Token>) {
         lookMatch(0, IDENTIFIER) && lookMatch(1, CL) -> variableDefinitionStatement()
         lookMatch(0, IDENTIFIER) && (lookMatch(1, EQ) || lookMatch(1, CM))  -> assignmentStatement()
         match(IF) -> ifStatement()
-        match(LC) -> {
+        lookMatch(0, AT) && lookMatch(1, LC) -> {
+            consume(AT)
+            consume(LC)
             val statements = ArrayList<Statement>()
             while (!match(RC))
                 statements.add(statement())
             UnionStatement(statements)
+        }
+        match(LC) -> {
+            val statements = ArrayList<Statement>()
+            while (!match(RC))
+                statements.add(statement())
+            BlockStatement(statements)
         }
         else -> ExpressionStatement(expression())
     }
