@@ -9,11 +9,17 @@ abstract class CompileException(message: String)
 class VariableUsedWithoutBeingDeclaredException(identifier: String)
     : CompileException("Variable $$identifier used without being declared")
 
+class VariableAlreadyDeclaredException(identifier: String)
+    : CompileException("Variable $$identifier has multiple declarations in the same scope")
+
 class InvalidOperandTypesException(operation: Operations, vararg operandTypes: Types)
     : CompileException("Unable to perform operation $operation with following operand types: ${operandTypes.joinToString(", ")}")
 
 class InvalidCastException(from: Types, to: Types)
     : CompileException("Invalid type cast $from -> $to")
 
-class InvalidValueTypeExveption(type: Types)
+class InvalidValueTypeException(type: Types)
     : CompileException("Invalid value type: $type")
+
+class TypeInferenceFailException
+    : CompileException("Unable to determine value type")
