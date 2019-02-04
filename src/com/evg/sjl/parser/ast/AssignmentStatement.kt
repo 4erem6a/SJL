@@ -6,7 +6,7 @@ import com.evg.sjl.values.Types
 import jdk.internal.org.objectweb.asm.Opcodes
 import jdk.internal.org.objectweb.asm.tree.VarInsnNode
 
-class AssignmentStatement(val identifier: String, var expression: Expression) : Statement {
+class AssignmentStatement(var identifier: String, var expression: Expression) : Statement {
     override fun compile(context: CompilationContext) {
         expression.compile(context)
         val symbol = context.symbolTable[identifier]
