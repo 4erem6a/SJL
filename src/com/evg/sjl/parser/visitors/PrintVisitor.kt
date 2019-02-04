@@ -28,8 +28,13 @@ class PrintVisitor : Visitor {
     }
 
     override fun visit(statement: VariableDefinitionStatement) {
-        result.append("$${statement.identifier} : ")
-        result.append(type(statement.type))
+        result.append("let $${statement.identifier}")
+        if (statement.type != null)
+            result.append(": ${type(statement.type!!)}")
+        if (statement.initializer != null) {
+            result.append(" = ")
+            statement.initializer!!.accept(this)
+        }
         result.appendln()
     }
 
