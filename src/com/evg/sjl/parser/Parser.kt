@@ -30,6 +30,9 @@ class Parser(private val tokens: List<Token>) {
         lookMatch(0, IDENTIFIER) && (lookMatch(1, EQ) || lookMatch(1, CM))  -> assignmentStatement()
         match(IF) -> ifStatement()
         match(LET) -> variableDefinitionStatement()
+        match(WHILE) -> whileStatement()
+        match(DO) -> doWhileStatement()
+        match(FOR) -> forStatement()
         lookMatch(0, AT) && lookMatch(1, LC) -> {
             consume(AT)
             consume(LC)
@@ -45,6 +48,53 @@ class Parser(private val tokens: List<Token>) {
             BlockStatement(statements)
         }
         else -> ExpressionStatement(expression())
+    }
+
+    private fun forStatement(): Statement {
+        consume(LP)
+        val initialization = if (match(SC))
+            null
+        else statement()
+        if (initialization != null)
+            consume(SC)
+        val condition = if (match(SC))
+            null
+        else expression()
+        if (condition != null)
+            consume(SC)
+        val iteration = if (match(RP))
+            null
+        else statement()
+        if (iteration != null)
+            consume(RP)
+        val body = mutableListOf(statement())
+        if (iteration != null)
+            body.add(iteration)
+        val block = mutableListOf<Statement>()
+        if (initialization != null)
+            block.add(initialization)
+        block.add(WhileStatement(
+                condition ?: ValueExpression(BooleanValue(true)),
+                UnionStatement(body)
+        ))
+        return BlockStatement(block)
+    }
+
+    private fun doWhileStatement(): Statement {
+        val body = statement()
+        consume(WHILE)
+        consume(LP)
+        val condition = expression()
+        consume(RP)
+        return DoWhileStatement(body, condition)
+    }
+
+    private fun whileStatement(): Statement {
+        consume(LP)
+        val condition = expression()
+        consume(RP)
+        val body = statement()
+        return WhileStatement(condition, body)
     }
 
     private fun ifStatement(): Statement {
