@@ -133,25 +133,21 @@ class PrintVisitor : Visitor {
         result.append("if (")
         statement.condition.accept(this)
         result.append(")")
-        if (statement.ifStatement !is UnionStatement) {
+        if (statement.ifStatement !is UnionStatement
+                && statement.ifStatement !is BlockStatement) {
             result.append("\n")
             indent(1)
             indentLevel++
         } else result.append(" ")
         statement.ifStatement.accept(this)
-        if (statement.ifStatement !is UnionStatement)
+        if (statement.ifStatement !is UnionStatement
+                && statement.ifStatement !is BlockStatement)
             indentLevel--
         if (statement.elseStatement == null)
             return
         indent()
         result.append("else ")
         statement.elseStatement?.accept(this)
-    }
-
-    private fun indent(offset: Int = 0) {
-        repeat((0 until indentLevel + offset).count()) {
-            result.append("\t")
-        }
     }
 
     override fun visit(statement: BlockStatement) {
@@ -168,5 +164,44 @@ class PrintVisitor : Visitor {
         indentLevel--
         indent()
         result.appendln("}")
+    }
+
+    override fun visit(statement: WhileStatement) {
+        result.append("while (")
+        statement.condition.accept(this)
+        result.append(")")
+        if (statement.body !is UnionStatement
+                && statement.body !is BlockStatement) {
+            result.append("\n")
+            indent(1)
+            indentLevel++
+        } else result.append(" ")
+        statement.body.accept(this)
+        if (statement.body !is UnionStatement
+                && statement.body !is BlockStatement)
+            indentLevel--
+    }
+
+    override fun visit(statement: DoWhileStatement) {
+        result.append("do")
+        if (statement.body !is UnionStatement
+                && statement.body !is BlockStatement) {
+            result.append("\n")
+            indent(1)
+            indentLevel++
+        } else result.append(" ")
+        statement.body.accept(this)
+        if (statement.body !is UnionStatement
+                && statement.body !is BlockStatement)
+            indentLevel--
+        result.append("while (")
+        statement.condition.accept(this)
+        result.append(")")
+    }
+
+    private fun indent(offset: Int = 0) {
+        repeat((0 until indentLevel + offset).count()) {
+            result.append("\t")
+        }
     }
 }
