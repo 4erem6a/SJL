@@ -50,4 +50,14 @@ interface Visitor {
     fun visit(statement: BlockStatement) {
         statement.statements.forEach { it.accept(this) }
     }
+
+    fun visit(statement: WhileStatement) {
+        statement.condition.accept(this)
+        statement.body.accept(this)
+    }
+
+    fun visit(statement: DoWhileStatement) {
+        statement.body.accept(this)
+        statement.condition.accept(this)
+    }
 }
