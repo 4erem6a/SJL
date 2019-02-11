@@ -2,11 +2,9 @@ package com.evg.sjl
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
-import com.evg.sjl.exceptions.CompileException
-import com.evg.sjl.exceptions.InnerException
-import com.evg.sjl.exceptions.LexicalException
-import com.evg.sjl.exceptions.SyntaxException
+import com.evg.sjl.exceptions.*
 import java.io.File
+import java.lang.RuntimeException
 import kotlin.system.measureTimeMillis
 
 fun main(argv: Array<String>) {
@@ -60,13 +58,23 @@ fun main(argv: Array<String>) {
 
     } catch (e: LexicalException) {
         System.err.println("Lexical error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
+        args.debug(e)
     } catch (e: SyntaxException) {
         System.err.println("Syntax error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
+        args.debug(e)
     } catch (e: CompileException) {
         System.err.println("Compilation error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
+        args.debug(e)
     } catch (e: InnerException) {
         System.err.println("Inner error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
+        args.debug(e)
     }
+}
+
+private fun Args.debug(e: SJLException) {
+    if (!this.debug)
+        return
+    e.printStackTrace()
 }
 
 private class Args {
@@ -82,8 +90,10 @@ private class Args {
     var printTokens = false
     @Parameter(names = ["-l", "--listing"], description = "Print program listing", order = 5)
     var printListing = false
-    @Parameter(names = ["-v", "--version"], description = "Display compiler version", order = 6)
+    @Parameter(names = ["-d", "--debug"], description = "Enable debug mode", order = 6)
+    var debug = false
+    @Parameter(names = ["-v", "--version"], description = "Display compiler version", order = 7)
     var version = false
-    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 7)
+    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 8)
     var help = false
 }
