@@ -16,6 +16,9 @@ object Keywords {
             "false" to FALSE,
             "if" to IF,
             "else" to ELSE,
-            "let" to LET
+            "let" to LET,
+            "while" to WHILE,
+            "do" to DO,
+            "for" to FOR
     )
 }

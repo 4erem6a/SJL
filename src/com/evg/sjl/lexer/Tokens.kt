@@ -56,6 +56,9 @@ enum class TokenTypes {
     IF,                 //if
     ELSE,               //else
     LET,                //let
+    WHILE,              //while
+    DO,                 //do
+    FOR,                //for
 
     TRUE,               //true
     FALSE,              //false
