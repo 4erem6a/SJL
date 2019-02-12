@@ -52,3 +52,20 @@ let $x = 1
 }
 println $x      # OUTPUT: 1
 ```
+```
+# Some loops
+let $a = 0
+while ($a < 10) {
+    println $a
+    $a = $a + 1
+}
+
+let $b = 0
+do {
+    println $b
+    $b = $b + 1
+} while ($b < 10)
+
+for (let $c = 0; $c < 10; $c = $c + 1)
+    println $c
+```
