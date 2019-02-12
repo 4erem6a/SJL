@@ -3,44 +3,63 @@ package com.evg.sjl
 import com.evg.sjl.codegen.ByteCodeGenerator
 import com.evg.sjl.codegen.ByteCodeLoader
 import com.evg.sjl.exceptions.InnerException
+import com.evg.sjl.exceptions.LexicalException
 import com.evg.sjl.exceptions.SJLException
+import com.evg.sjl.exceptions.SyntaxException
 import com.evg.sjl.lexer.Lexer
 import com.evg.sjl.lexer.Token
 import com.evg.sjl.parser.Parser
 import com.evg.sjl.parser.ast.Node
 import com.evg.sjl.parser.visitors.PrintVisitor
 import sun.misc.Version
+import java.lang.Exception
 
-class SJL(private val source: String) {
+class SJL private constructor(private val ast: Node) {
     companion object {
         @JvmStatic
-        val VERSION = "1.3.0"
+        val VERSION: String = "1.4.0"
+
+        @JvmStatic
+        @Throws(LexicalException::class)
+        fun tokenize(source: String) = Lexer(source).tokenize()
+
+        @JvmStatic
+        @Throws(SyntaxException::class)
+        fun parse(tokens: List<Token>) = Parser(tokens).parse()
+
+        @JvmStatic
+        @Throws(LexicalException::class, SyntaxException::class)
+        fun from(source: String) = SJL(parse(tokenize(source)))
+
+        @JvmStatic
+        @Throws(SyntaxException::class)
+        fun from(tokens: List<Token>) = SJL(parse(tokens))
+
+        fun from(ast: Node) = SJL(ast)
     }
 
-    @Throws(SJLException::class)
-    fun tokenize(): List<Token> = Lexer(source).tokenize()
-
-    @Throws(SJLException::class)
-    fun parse(): Node = Parser(tokenize()).parse()
-
-    @Throws(SJLException::class)
-    fun compile(): Runnable {
-        try {
-            val ast = parse()
-            val bytecode = ByteCodeGenerator(ast).generate()
-            val clazz = ByteCodeLoader.loadClass(bytecode)
-            return clazz.newInstance() as Runnable
-        } catch (e: SJLException) {
-            throw e
-        } catch (e: Exception) {
-            throw InnerException(e)
-        }
-    }
-
-    @Throws(SJLException::class)
-    fun listing(): String {
+    fun stringify(): String {
         val pv = PrintVisitor()
-        parse().accept(pv)
+        ast.accept(pv)
         return pv.toString()
+    }
+
+    val bytecode
+        get() = ByteCodeGenerator(ast).generate()
+
+    val clazz
+        get() = ByteCodeLoader.loadClass(bytecode)
+
+    val runnable
+        get() = clazz.newInstance() as Runnable
+}
+
+fun process(source: String) {
+    try {
+        SJL.from(source).runnable.run()
+    } catch (e: SJLException) {
+        throw e
+    } catch (e: Exception) {
+        throw InnerException(e)
     }
 }
