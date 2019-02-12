@@ -29,7 +29,5 @@ class WhileStatement(
         }
     }
 
-    override fun accept(visitor: Visitor) {
-        visitor.visit(this)
-    }
+    override fun accept(visitor: Visitor) = visitor.visit(this)
 }
