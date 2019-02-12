@@ -4,7 +4,6 @@ import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
 import com.evg.sjl.exceptions.*
 import java.io.File
-import java.lang.RuntimeException
 import kotlin.system.measureTimeMillis
 
 fun main(argv: Array<String>) {
@@ -41,20 +40,20 @@ fun main(argv: Array<String>) {
     }
 
     try {
-        val sjl = SJL(source)
+        val sjl = SJL.from(source)
 
         if (args.execute) {
-            val runnable = sjl.compile()
+            val runnable = sjl.runnable
             val execTime = measureTimeMillis { runnable.run() }
             if (args.measureExecTime)
                 println("\nExecution took ${execTime}ms")
         }
 
         if (args.printTokens)
-            println("Token list:\n${sjl.tokenize().joinToString("\n")}end.")
+            println("Token list:\n${SJL.tokenize(source).joinToString("\n")}end.")
 
         if (args.printListing)
-            println("Program listing: ${sjl.listing()}")
+            println("Program listing: ${sjl.stringify()}")
 
     } catch (e: LexicalException) {
         System.err.println("Lexical error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
@@ -82,18 +81,20 @@ private class Args {
     var sourceCode: String? = null
     @Parameter(names = ["-f", "--file"], description = "The source file", order = 1)
     var sourceFile: String? = null
-    @Parameter(names = ["-e", "--execute"], description = "Execute source code", order = 2)
+    @Parameter(names = ["-o", "--output"], description = "Optional output file [not implemented]", order = 2)
+    var outputFile: String? = null
+    @Parameter(names = ["-e", "--execute"], description = "Execute source code", order = 3)
     var execute = false
-    @Parameter(names = ["-m", "--measure"], description = "Toggle execution time measurement", order = 3)
+    @Parameter(names = ["-m", "--measure"], description = "Toggle execution time measurement", order = 4)
     var measureExecTime = false
-    @Parameter(names = ["-t", "--tokens"], description = "Print token list", order = 4)
+    @Parameter(names = ["-t", "--tokens"], description = "Print token list", order = 5)
     var printTokens = false
-    @Parameter(names = ["-l", "--listing"], description = "Print program listing", order = 5)
+    @Parameter(names = ["-l", "--listing"], description = "Print program listing", order = 6)
     var printListing = false
-    @Parameter(names = ["-d", "--debug"], description = "Enable debug mode", order = 6)
+    @Parameter(names = ["-d", "--debug"], description = "Enable debug mode", order = 7)
     var debug = false
-    @Parameter(names = ["-v", "--version"], description = "Display compiler version", order = 7)
+    @Parameter(names = ["-v", "--version"], description = "Display compiler version", order = 8)
     var version = false
-    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 8)
+    @Parameter(names = ["-h", "--help"], description = "Display this message", help = true, order = 9)
     var help = false
 }
