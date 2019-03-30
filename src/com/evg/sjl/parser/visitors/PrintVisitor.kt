@@ -112,21 +112,26 @@ class PrintVisitor : Visitor {
     }
 
     override fun visit(expression: InputExpression) {
-        result.append("input")
-        result.append(':')
+        result.append("input: ")
         result.append(type(expression.type))
     }
 
     override fun visit(expression: CastExpression) {
-        result.append("(${expression.type.toString().toLowerCase()})")
+        result.append("(${type(expression.type)})")
         expression.expression.accept(this)
     }
 
-    fun type(type: Types): String = when (type) {
-        Types.INTEGER -> "integer"
-        Types.DOUBLE -> "double"
-        Types.STRING -> "string"
-        Types.BOOLEAN -> "boolean"
+    fun type(type: Type): String = "@" + when (type) {
+        is Primitives -> primitive(type)
+        is ArrayType -> "${type(type.type)}[]"
+        else -> "?"
+    }
+
+    fun primitive(type: Primitives): String = when (type) {
+        Primitives.INTEGER -> "integer"
+        Primitives.DOUBLE -> "double"
+        Primitives.STRING -> "string"
+        Primitives.BOOLEAN -> "boolean"
     }
 
     override fun visit(statement: IfStatement) {
