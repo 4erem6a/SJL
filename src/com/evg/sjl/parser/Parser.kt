@@ -33,9 +33,7 @@ class Parser(private val tokens: List<Token>) {
         match(WHILE) -> whileStatement()
         match(DO) -> doWhileStatement()
         match(FOR) -> forStatement()
-        lookMatch(0, AT) && lookMatch(1, LC) -> {
-            consume(AT)
-            consume(LC)
+        match(ATLC) -> {
             val statements = ArrayList<Statement>()
             while (!match(RC))
                 statements.add(statement())
@@ -144,9 +142,9 @@ class Parser(private val tokens: List<Token>) {
         return UnionStatement(statements)
     }
 
-    private fun expression(): Expression = Or()
+    private fun expression(): Expression = or()
 
-    private fun Or(): Expression {
+    private fun or(): Expression {
         var res = xor()
         loop@ while (true) res = when {
             match(VBVB) -> BinaryExpression(BOOLEAN_OR, res, xor())
@@ -256,7 +254,7 @@ class Parser(private val tokens: List<Token>) {
 
     private fun cast(): Expression = when {
         match(LP) -> {
-            val type = type()
+            val type = primitive()
             if (type == null) {
                 position--
                 unary()
@@ -304,15 +302,31 @@ class Parser(private val tokens: List<Token>) {
 
     private fun inputExpression(): Expression {
         consume(CL)
-        val type = type() ?: throw UnexpectedTokenException(get())
+        val type = primitive() ?: throw UnexpectedTokenException(get())
         return InputExpression(type)
     }
 
-    private fun type(): Types? = when {
-        match(T_DOUBLE) -> Types.DOUBLE
-        match(T_INTEGER) -> Types.INTEGER
-        match(T_STRING) -> Types.STRING
-        match(T_BOOLEAN) -> Types.BOOLEAN
+    private fun type(): Type? {
+        val primitive = primitive() ?: return null
+        if (lookMatch(0, LB))
+            return arrayType(primitive)
+        return primitive
+    }
+
+    private fun arrayType(type: Primitives): Type? {
+        var arrayType: Type = type
+        while (match(LB)) {
+            arrayType = ArrayType(arrayType)
+            consume(RB)
+        }
+        return arrayType
+    }
+
+    private fun primitive(): Primitives? = when {
+        match(T_DOUBLE) -> Primitives.DOUBLE
+        match(T_INTEGER) -> Primitives.INTEGER
+        match(T_STRING) -> Primitives.STRING
+        match(T_BOOLEAN) -> Primitives.BOOLEAN
         else -> null
     }
 
