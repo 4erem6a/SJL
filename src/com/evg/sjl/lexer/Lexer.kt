@@ -1,9 +1,6 @@
 package com.evg.sjl.lexer
 
-import com.evg.sjl.exceptions.InvalidTokenDefinitionException
-import com.evg.sjl.exceptions.UnknownCharacterException
-import com.evg.sjl.exceptions.UnknownKeywordException
-import com.evg.sjl.exceptions.UnknownOperatorException
+import com.evg.sjl.exceptions.*
 import com.evg.sjl.lexer.TokenTypes.*
 
 class Lexer(private val source: String) {
@@ -19,6 +16,7 @@ class Lexer(private val source: String) {
                 current.isDigit() -> number()
                 current == '$' -> identifier()
                 current.isLetter() -> keyword()
+                current == '@' -> typename()
                 current in Operators.characters -> operator()
                 current.isWhitespace() -> skip()
                 current == '\'' -> character()
@@ -88,6 +86,17 @@ class Lexer(private val source: String) {
         val word = word()
         val type = Keywords.map[word]
                 ?: throw UnknownKeywordException(word, pos)
+        add(Token(type, word, pos))
+    }
+
+    private fun typename() {
+        if (!peek(1).isLetter())
+            return operator()
+        val pos = position()
+        skip()
+        val word = word()
+        val type = Typenames.map[word]
+                ?: throw UnknownTypenameException(word, pos)
         add(Token(type, word, pos))
     }
 

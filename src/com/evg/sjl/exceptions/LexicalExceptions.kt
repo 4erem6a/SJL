@@ -15,4 +15,7 @@ class UnknownKeywordException(word: String, position: Position)
     : LexicalException("Unknown keyword '$word' at $position")
 
 class UnknownOperatorException(operator: String, position: Position)
-    : LexicalException("Unknown keyword '$operator' at $position")
+    : LexicalException("Unknown operator '$operator' at $position")
+
+class UnknownTypenameException(typename: String, position: Position)
+    : LexicalException("Unknown typename @$typename at $position")
