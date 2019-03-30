@@ -1,7 +1,7 @@
 package com.evg.sjl
 
-import com.evg.sjl.codegen.ByteCodeGenerator
-import com.evg.sjl.codegen.ByteCodeLoader
+import com.evg.sjl.codegen.BytecodeGenerator
+import com.evg.sjl.codegen.BytecodeLoader
 import com.evg.sjl.exceptions.InnerException
 import com.evg.sjl.exceptions.LexicalException
 import com.evg.sjl.exceptions.SJLException
@@ -11,8 +11,6 @@ import com.evg.sjl.lexer.Token
 import com.evg.sjl.parser.Parser
 import com.evg.sjl.parser.ast.Node
 import com.evg.sjl.parser.visitors.PrintVisitor
-import sun.misc.Version
-import java.lang.Exception
 
 class SJL private constructor(private val ast: Node) {
     companion object {
@@ -45,10 +43,10 @@ class SJL private constructor(private val ast: Node) {
     }
 
     val bytecode
-        get() = ByteCodeGenerator(ast).generate()
+        get() = BytecodeGenerator(ast).generate()
 
     val clazz
-        get() = ByteCodeLoader.loadClass(bytecode)
+        get() = BytecodeLoader.loadClass(bytecode)
 
     val runnable
         get() = clazz.newInstance() as Runnable
