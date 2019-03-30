@@ -3,47 +3,48 @@ package com.evg.sjl.parser.ast
 import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.exceptions.InvalidCastException
 import com.evg.sjl.parser.visitors.Visitor
-import com.evg.sjl.values.Types
+import com.evg.sjl.values.Primitives
+import com.evg.sjl.values.Type
 import jdk.internal.org.objectweb.asm.Opcodes.*
 import jdk.internal.org.objectweb.asm.tree.*
 
-class CastExpression(var type: Types, var expression: Expression) : Expression {
+class CastExpression(var type: Type, var expression: Expression) : Expression {
     override fun compile(context: CompilationContext) {
         expression.compile(context)
         val tFrom = context.typeInference.getType(expression)
         when (tFrom) {
-            Types.INTEGER -> when (type) {
-                Types.INTEGER -> return
-                Types.DOUBLE -> context.il.add(InsnNode(I2D))
-                Types.STRING -> context.il.add(MethodInsnNode(
+            Primitives.INTEGER -> when (type) {
+                Primitives.INTEGER -> return
+                Primitives.DOUBLE -> context.il.add(InsnNode(I2D))
+                Primitives.STRING -> context.il.add(MethodInsnNode(
                         INVOKESTATIC,
                         "java/lang/String",
                         "valueOf",
                         "(I)Ljava/lang/String;",
                         false
                 ))
-                Types.BOOLEAN -> context.il.i2boolean()
+                Primitives.BOOLEAN -> context.il.i2boolean()
             }
-            Types.DOUBLE -> when (type) {
-                Types.DOUBLE -> return
-                Types.INTEGER -> context.il.add(InsnNode(D2I))
-                Types.STRING ->
+            Primitives.DOUBLE -> when (type) {
+                Primitives.DOUBLE -> return
+                Primitives.INTEGER -> context.il.add(InsnNode(D2I))
+                Primitives.STRING ->
                     context.il.add(MethodInsnNode(INVOKESTATIC,
                             "java/lang/String",
                             "valueOf",
                             "(D)Ljava/lang/String;",
                             false))
-                Types.BOOLEAN -> with(context.il) {
+                Primitives.BOOLEAN -> with(context.il) {
                     add(InsnNode(D2I))
                     i2boolean()
                 }
             }
-            Types.STRING -> if (tFrom != Types.STRING)
+            Primitives.STRING -> if (tFrom != Primitives.STRING)
                 throw InvalidCastException(tFrom, type)
-            Types.BOOLEAN -> when (type) {
-                Types.BOOLEAN, Types.INTEGER -> return
-                Types.DOUBLE -> context.il.add(InsnNode(I2D))
-                Types.STRING -> context.il.add(MethodInsnNode(
+            Primitives.BOOLEAN -> when (type) {
+                Primitives.BOOLEAN, Primitives.INTEGER -> return
+                Primitives.DOUBLE -> context.il.add(InsnNode(I2D))
+                Primitives.STRING -> context.il.add(MethodInsnNode(
                         INVOKESTATIC,
                         "java/lang/String",
                         "valueOf",

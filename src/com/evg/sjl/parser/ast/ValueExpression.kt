@@ -10,13 +10,13 @@ import jdk.internal.org.objectweb.asm.tree.LdcInsnNode
 
 class ValueExpression(var value: Value) : Expression {
     override fun compile(context: CompilationContext) = when (value.type) {
-        Types.DOUBLE ->
+        Primitives.DOUBLE ->
             context.il.add(LdcInsnNode((value as DoubleValue).value))
-        Types.INTEGER ->
+        Primitives.INTEGER ->
             context.il.add(LdcInsnNode((value as IntegerValue).value))
-        Types.STRING ->
+        Primitives.STRING ->
             context.il.add(LdcInsnNode((value as StringValue).value))
-        Types.BOOLEAN ->
+        Primitives.BOOLEAN ->
             if ((value as BooleanValue).value)
                 context.il.add(InsnNode(ICONST_1))
             else context.il.add(InsnNode(ICONST_0))

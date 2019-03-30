@@ -1,7 +1,7 @@
 package com.evg.sjl.exceptions
 
 import com.evg.sjl.lib.Operations
-import com.evg.sjl.values.Types
+import com.evg.sjl.values.Type
 
 abstract class CompileException(message: String)
     : SJLException(message)
@@ -12,14 +12,17 @@ class VariableUsedWithoutBeingDeclaredException(identifier: String)
 class VariableAlreadyDeclaredException(identifier: String)
     : CompileException("Variable $$identifier has multiple declarations in the same scope")
 
-class InvalidOperandTypesException(operation: Operations, vararg operandTypes: Types)
+class InvalidOperandTypesException(operation: Operations, vararg operandTypes: Type)
     : CompileException("Unable to perform operation $operation with following operand types: ${operandTypes.joinToString(", ")}")
 
-class InvalidCastException(from: Types, to: Types)
+class InvalidCastException(from: Type, to: Type)
     : CompileException("Invalid type cast $from -> $to")
 
-class InvalidValueTypeException(type: Types)
+class InvalidValueTypeException(type: Type)
     : CompileException("Invalid value type: $type")
 
 class TypeInferenceFailException
     : CompileException("Unable to determine value type")
+
+class MissingInitializerException(identifier: String)
+    : CompileException("Variable $$identifier is missing initializer")

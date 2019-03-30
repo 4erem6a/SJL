@@ -3,8 +3,9 @@ package com.evg.sjl.parser.ast
 import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.exceptions.InvalidValueTypeException
 import com.evg.sjl.parser.visitors.Visitor
-import com.evg.sjl.values.Types
-import jdk.internal.org.objectweb.asm.Opcodes.*
+import com.evg.sjl.values.Primitives
+import jdk.internal.org.objectweb.asm.Opcodes.GOTO
+import jdk.internal.org.objectweb.asm.Opcodes.IFEQ
 import jdk.internal.org.objectweb.asm.tree.JumpInsnNode
 import jdk.internal.org.objectweb.asm.tree.LabelNode
 
@@ -15,7 +16,7 @@ class IfStatement(
 ) : Statement {
     override fun compile(context: CompilationContext) {
         val type = context.typeInference.getType(condition)
-        if (type != Types.BOOLEAN)
+        if (type != Primitives.BOOLEAN)
             throw InvalidValueTypeException(type)
         condition.compile(context)
         with(context.il) {

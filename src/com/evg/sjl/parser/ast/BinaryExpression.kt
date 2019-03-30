@@ -4,7 +4,8 @@ import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.exceptions.InvalidOperandTypesException
 import com.evg.sjl.lib.BinaryOperations
 import com.evg.sjl.parser.visitors.Visitor
-import com.evg.sjl.values.Types
+import com.evg.sjl.values.Primitives
+import com.evg.sjl.values.Type
 import jdk.internal.org.objectweb.asm.Opcodes.*
 import jdk.internal.org.objectweb.asm.tree.*
 
@@ -13,12 +14,12 @@ class BinaryExpression(var operation: BinaryOperations,
     override fun compile(context: CompilationContext) {
         val lt = context.typeInference.getType(left)
         val rType = context.typeInference.getType(right)
-        if (lt != rType && rType != Types.STRING)
+        if (lt != rType && rType != Primitives.STRING)
             right = CastExpression(lt, right)
         val rt = context.typeInference.getType(right)
         when (lt) {
-            Types.DOUBLE -> {
-                if (rt != Types.DOUBLE)
+            Primitives.DOUBLE -> {
+                if (rt != Primitives.DOUBLE)
                     throw InvalidOperandTypesException(operation, lt, rType)
                 when (operation) {
                     BinaryOperations.ADDITION -> dAdd(context)
@@ -35,8 +36,8 @@ class BinaryExpression(var operation: BinaryOperations,
                     else -> throw InvalidOperandTypesException(operation, lt, rType)
                 }
             }
-            Types.INTEGER -> {
-                if (rt != Types.INTEGER)
+            Primitives.INTEGER -> {
+                if (rt != Primitives.INTEGER)
                     throw InvalidOperandTypesException(operation, lt, rType)
                 when (operation) {
                     BinaryOperations.ADDITION -> iAdd(context)
@@ -59,8 +60,8 @@ class BinaryExpression(var operation: BinaryOperations,
                     else -> throw InvalidOperandTypesException(operation, lt, rType)
                 }
             }
-            Types.BOOLEAN -> {
-                if (rt != Types.BOOLEAN)
+            Primitives.BOOLEAN -> {
+                if (rt != Primitives.BOOLEAN)
                     throw InvalidOperandTypesException(operation, lt, rType)
                 when (operation) {
                     BinaryOperations.BOOLEAN_AND -> bAnd(context)
@@ -71,7 +72,7 @@ class BinaryExpression(var operation: BinaryOperations,
                     else -> throw InvalidOperandTypesException(operation, lt, rType)
                 }
             }
-            Types.STRING -> {
+            Primitives.STRING -> {
                 when (operation) {
                     BinaryOperations.ADDITION -> sAdd(context, rt)
                     BinaryOperations.EQUALS -> sEquals(context)
@@ -193,7 +194,7 @@ private fun BinaryExpression.dLT(context: CompilationContext) {
     context.il.add(lEnd)
 }
 
-private fun BinaryExpression.sAdd(context: CompilationContext, rt: Types) {
+private fun BinaryExpression.sAdd(context: CompilationContext, rt: Type) {
     context.il.add(TypeInsnNode(NEW, "java/lang/StringBuilder"))
     context.il.add(InsnNode(DUP))
     context.il.add(MethodInsnNode(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false))
@@ -201,10 +202,10 @@ private fun BinaryExpression.sAdd(context: CompilationContext, rt: Types) {
     context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
     right.compile(context)
     when (rt) {
-        Types.DOUBLE -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(D)Ljava/lang/StringBuilder;", false))
-        Types.INTEGER -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;", false))
-        Types.STRING -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
-        Types.BOOLEAN -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Z)Ljava/lang/StringBuilder;", false))
+        Primitives.DOUBLE -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(D)Ljava/lang/StringBuilder;", false))
+        Primitives.INTEGER -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;", false))
+        Primitives.STRING -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
+        Primitives.BOOLEAN -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Z)Ljava/lang/StringBuilder;", false))
     }
     context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false))
 }

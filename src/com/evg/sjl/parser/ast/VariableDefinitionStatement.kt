@@ -1,17 +1,18 @@
 package com.evg.sjl.parser.ast
 
 import com.evg.sjl.codegen.CompilationContext
+import com.evg.sjl.exceptions.MissingInitializerException
 import com.evg.sjl.exceptions.TypeInferenceFailException
 import com.evg.sjl.exceptions.VariableAlreadyDeclaredException
 import com.evg.sjl.parser.visitors.Visitor
-import com.evg.sjl.values.Types
+import com.evg.sjl.values.Primitives
+import com.evg.sjl.values.Type
 import jdk.internal.org.objectweb.asm.Opcodes
-import jdk.internal.org.objectweb.asm.tree.LdcInsnNode
 import jdk.internal.org.objectweb.asm.tree.VarInsnNode
 
 class VariableDefinitionStatement(
         var identifier: String,
-        var type: Types? = null,
+        var type: Type? = null,
         var initializer: Expression? = null
 ) : Statement {
     override fun compile(context: CompilationContext) {
@@ -28,13 +29,15 @@ class VariableDefinitionStatement(
             throw VariableAlreadyDeclaredException(identifier)
         val symbol = context.symbolTable.register(identifier, type)
         initializer?.compile(context)
-                ?: context.il.add(LdcInsnNode(type.defaultValue))
+                ?: if (type is Primitives)
+                    ValueExpression(type.defaultValue).compile(context)
+        else throw MissingInitializerException(identifier)
         when (type) {
-            Types.DOUBLE ->
+            Primitives.DOUBLE ->
                 context.il.add(VarInsnNode(Opcodes.DSTORE, symbol.index))
-            Types.INTEGER, Types.BOOLEAN ->
+            Primitives.INTEGER, Primitives.BOOLEAN ->
                 context.il.add(VarInsnNode(Opcodes.ISTORE, symbol.index))
-            Types.STRING ->
+            Primitives.STRING ->
                 context.il.add(VarInsnNode(Opcodes.ASTORE, symbol.index))
         }
     }

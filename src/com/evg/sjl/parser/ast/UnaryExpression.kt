@@ -4,8 +4,7 @@ import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.exceptions.InvalidOperandTypesException
 import com.evg.sjl.lib.UnaryOperations
 import com.evg.sjl.parser.visitors.Visitor
-import com.evg.sjl.values.Types
-import jdk.internal.org.objectweb.asm.Label
+import com.evg.sjl.values.Primitives
 import jdk.internal.org.objectweb.asm.Opcodes.*
 import jdk.internal.org.objectweb.asm.tree.InsnNode
 import jdk.internal.org.objectweb.asm.tree.JumpInsnNode
@@ -17,11 +16,11 @@ class UnaryExpression(var operation: UnaryOperations,
         expression.compile(context)
         val type = context.typeInference.getType(expression)
         when (type) {
-            Types.DOUBLE -> when (operation) {
+            Primitives.DOUBLE -> when (operation) {
                 UnaryOperations.NEGATION -> context.il.add(InsnNode(DNEG))
                 else -> throw InvalidOperandTypesException(operation, type)
             }
-            Types.INTEGER -> when (operation) {
+            Primitives.INTEGER -> when (operation) {
                 UnaryOperations.NEGATION -> context.il.add(InsnNode(INEG))
                 UnaryOperations.BITWISE_NEGATION -> {
                     context.il.add(InsnNode(ICONST_M1))
@@ -29,7 +28,7 @@ class UnaryExpression(var operation: UnaryOperations,
                 }
                 else -> throw InvalidOperandTypesException(operation, type)
             }
-            Types.BOOLEAN -> when (operation) {
+            Primitives.BOOLEAN -> when (operation) {
                 UnaryOperations.BOOLEAN_NEGATION -> {
                     val lFalse = LabelNode()
                     val lEnd = LabelNode()

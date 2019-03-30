@@ -1,6 +1,7 @@
 package com.evg.sjl.codegen
 
-import com.evg.sjl.values.Types
+import com.evg.sjl.values.Primitives
+import com.evg.sjl.values.Type
 
 class SymbolTable {
     class SymbolScope(var subscope: SymbolScope? = null) {
@@ -11,14 +12,14 @@ class SymbolTable {
     }
 
     var topScope = SymbolScope()
-    private var lastSymbol: Symbol = Symbol(0, Types.INTEGER)
+    private var lastSymbol: Symbol = Symbol(0, Primitives.INTEGER)
 
-    fun register(identifier: String, type: Types): Symbol {
+    fun register(identifier: String, type: Type): Symbol {
         val existing = topScope.symbols[identifier]
         if (existing != null)
             return existing
         val index = lastSymbol.index + when (lastSymbol.type) {
-            Types.DOUBLE -> 2
+            Primitives.DOUBLE -> 2
             else -> 1
         }
         val symbol = Symbol(index, type)
@@ -40,4 +41,4 @@ class SymbolTable {
     fun getTop(identifier: String): Symbol? = topScope.symbols[identifier]
 }
 
-data class Symbol(val index: Int, val type: Types)
+data class Symbol(val index: Int, val type: Type)

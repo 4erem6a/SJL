@@ -2,9 +2,9 @@ package com.evg.sjl.parser.ast
 
 import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.parser.visitors.Visitor
-import com.evg.sjl.values.Types
-import jdk.internal.org.objectweb.asm.Opcodes
-import jdk.internal.org.objectweb.asm.Opcodes.*
+import com.evg.sjl.values.Primitives
+import jdk.internal.org.objectweb.asm.Opcodes.POP
+import jdk.internal.org.objectweb.asm.Opcodes.POP2
 import jdk.internal.org.objectweb.asm.tree.InsnNode
 
 class ExpressionStatement(var expression: Expression) : Statement {
@@ -12,7 +12,7 @@ class ExpressionStatement(var expression: Expression) : Statement {
         val type = context.typeInference.getType(expression)
         expression.compile(context)
         context.il.add(InsnNode(when (type) {
-            Types.DOUBLE -> POP2
+            Primitives.DOUBLE -> POP2
             else -> POP
         }))
     }
