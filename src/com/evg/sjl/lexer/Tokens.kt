@@ -14,6 +14,9 @@ enum class TokenTypes {
     PL,                 //+
     PR,                 //%
 
+    PLPL,               //++
+    MNMN,               //--
+
     LALA,               //<<
     RARA,               //>>
     RARARA,             //>>>
@@ -44,10 +47,12 @@ enum class TokenTypes {
     LP,                 //(
     RP,                 //)
 
-    LC,                 //{
-    RC,                 //}
+    LB,                 //[
+    RB,                 //]
 
-    AT,                 //@
+    LC,                 //{
+    ATLC,               //@{
+    RC,                 //}
 
     PRINT,              //print
     PRINTLN,            //println
