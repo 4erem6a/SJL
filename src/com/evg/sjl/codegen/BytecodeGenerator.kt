@@ -5,7 +5,7 @@ import jdk.internal.org.objectweb.asm.ClassWriter
 import jdk.internal.org.objectweb.asm.Opcodes.*
 import jdk.internal.org.objectweb.asm.tree.*
 
-class ByteCodeGenerator(private val ast: Node) {
+class BytecodeGenerator(private val ast: Node) {
     companion object {
         const val generatedClassName = "com/evg/SJLRunnable"
         const val scannerFieldName = "scanner"
