@@ -28,5 +28,6 @@ enum class BinaryOperations : Operations {
 enum class UnaryOperations : Operations {
     NEGATION,
     BITWISE_NEGATION,
-    BOOLEAN_NEGATION
+    BOOLEAN_NEGATION,
+    ARRAY_LENGTH
 }
