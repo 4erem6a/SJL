@@ -5,6 +5,7 @@ import com.evg.sjl.exceptions.InvalidOperandTypesException
 import com.evg.sjl.lib.BinaryOperations
 import com.evg.sjl.parser.visitors.Visitor
 import com.evg.sjl.values.Primitives
+import com.evg.sjl.values.StringType
 import com.evg.sjl.values.Type
 import jdk.internal.org.objectweb.asm.Opcodes.*
 import jdk.internal.org.objectweb.asm.tree.*
@@ -14,7 +15,7 @@ class BinaryExpression(var operation: BinaryOperations,
     override fun compile(context: CompilationContext) {
         val lt = context.typeInference.getType(left)
         val rType = context.typeInference.getType(right)
-        if (lt != rType && rType != Primitives.STRING)
+        if (lt != rType && rType !is StringType)
             right = CastExpression(lt, right)
         val rt = context.typeInference.getType(right)
         when (lt) {
@@ -72,7 +73,7 @@ class BinaryExpression(var operation: BinaryOperations,
                     else -> throw InvalidOperandTypesException(operation, lt, rType)
                 }
             }
-            Primitives.STRING -> {
+            is StringType -> {
                 when (operation) {
                     BinaryOperations.ADDITION -> sAdd(context, rt)
                     BinaryOperations.EQUALS -> sEquals(context)
@@ -204,8 +205,8 @@ private fun BinaryExpression.sAdd(context: CompilationContext, rt: Type) {
     when (rt) {
         Primitives.DOUBLE -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(D)Ljava/lang/StringBuilder;", false))
         Primitives.INTEGER -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;", false))
-        Primitives.STRING -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
         Primitives.BOOLEAN -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Z)Ljava/lang/StringBuilder;", false))
+        is StringType -> context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false))
     }
     context.il.add(MethodInsnNode(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false))
 }

@@ -3,6 +3,7 @@ package com.evg.sjl.parser.ast
 import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.parser.visitors.Visitor
 import com.evg.sjl.values.Primitives
+import com.evg.sjl.values.StringType
 import jdk.internal.org.objectweb.asm.Opcodes
 import jdk.internal.org.objectweb.asm.tree.FieldInsnNode
 import jdk.internal.org.objectweb.asm.tree.MethodInsnNode
@@ -10,13 +11,13 @@ import jdk.internal.org.objectweb.asm.tree.MethodInsnNode
 class PrintStatement(var newLine: Boolean, var expression: Expression) : Statement {
     override fun compile(context: CompilationContext) {
         context.il.add(FieldInsnNode(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"))
-        expression.compile(context)
-        val signature = when (context.typeInference.getType(expression)) {
-            Primitives.DOUBLE -> "(D)V"
-            Primitives.INTEGER -> "(I)V"
-            Primitives.STRING -> "(Ljava/lang/String;)V"
-            Primitives.BOOLEAN -> "(Z)V"
-            else -> "(Ljava/lang/Object;)V"
+        val type = context.typeInference.getType(expression)
+        if (type !is Primitives)
+            CastExpression(StringType(), expression).compile(context)
+        else expression.compile(context)
+        val signature = when (type) {
+            is Primitives -> "(${type.jvmType})V"
+            else -> "(Ljava/lang/String;)V"
         }
         context.il.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL,
                 "java/io/PrintStream",
@@ -24,7 +25,8 @@ class PrintStatement(var newLine: Boolean, var expression: Expression) : Stateme
                     "println"
                 else "print",
                 signature,
-                false))
+                false
+        ))
     }
 
     override fun accept(visitor: Visitor) = visitor.visit(this)

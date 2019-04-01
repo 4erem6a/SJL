@@ -3,7 +3,9 @@ package com.evg.sjl.parser.ast
 import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.exceptions.InvalidCastException
 import com.evg.sjl.parser.visitors.Visitor
+import com.evg.sjl.values.ArrayType
 import com.evg.sjl.values.Primitives
+import com.evg.sjl.values.StringType
 import com.evg.sjl.values.Type
 import jdk.internal.org.objectweb.asm.Opcodes.*
 import jdk.internal.org.objectweb.asm.tree.*
@@ -16,7 +18,7 @@ class CastExpression(var type: Type, var expression: Expression) : Expression {
             Primitives.INTEGER -> when (type) {
                 Primitives.INTEGER -> return
                 Primitives.DOUBLE -> context.il.add(InsnNode(I2D))
-                Primitives.STRING -> context.il.add(MethodInsnNode(
+                is StringType -> context.il.add(MethodInsnNode(
                         INVOKESTATIC,
                         "java/lang/String",
                         "valueOf",
@@ -28,7 +30,7 @@ class CastExpression(var type: Type, var expression: Expression) : Expression {
             Primitives.DOUBLE -> when (type) {
                 Primitives.DOUBLE -> return
                 Primitives.INTEGER -> context.il.add(InsnNode(D2I))
-                Primitives.STRING ->
+                is StringType ->
                     context.il.add(MethodInsnNode(INVOKESTATIC,
                             "java/lang/String",
                             "valueOf",
@@ -39,18 +41,37 @@ class CastExpression(var type: Type, var expression: Expression) : Expression {
                     i2boolean()
                 }
             }
-            Primitives.STRING -> if (tFrom != Primitives.STRING)
-                throw InvalidCastException(tFrom, type)
             Primitives.BOOLEAN -> when (type) {
                 Primitives.BOOLEAN, Primitives.INTEGER -> return
                 Primitives.DOUBLE -> context.il.add(InsnNode(I2D))
-                Primitives.STRING -> context.il.add(MethodInsnNode(
+                is StringType -> context.il.add(MethodInsnNode(
                         INVOKESTATIC,
                         "java/lang/String",
                         "valueOf",
                         "(Z)Ljava/lang/String;",
                         false
                 ))
+            }
+            is StringType -> if (type !is StringType)
+                throw InvalidCastException(tFrom, type)
+            is ArrayType -> if (type is StringType) {
+                if (tFrom.type is Primitives) context.il.add(
+                        MethodInsnNode(
+                                INVOKESTATIC,
+                                "java/util/Arrays",
+                                "toString",
+                                "(${tFrom.jvmType})${type.jvmType}",
+                                false
+                        )
+                ) else context.il.add(
+                        MethodInsnNode(
+                                INVOKESTATIC,
+                                "java/util/Arrays",
+                                "deepToString",
+                                "([Ljava/lang/Object;)${type.jvmType}",
+                                false
+                        )
+                )
             }
         }
     }
