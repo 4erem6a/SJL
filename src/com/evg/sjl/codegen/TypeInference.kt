@@ -3,8 +3,10 @@ package com.evg.sjl.codegen
 import com.evg.sjl.exceptions.TypeInferenceFailException
 import com.evg.sjl.exceptions.VariableUsedWithoutBeingDeclaredException
 import com.evg.sjl.lib.BinaryOperations.*
+import com.evg.sjl.lib.UnaryOperations
 import com.evg.sjl.parser.ast.*
 import com.evg.sjl.parser.visitors.Visitor
+import com.evg.sjl.values.ArrayType
 import com.evg.sjl.values.Primitives
 import com.evg.sjl.values.Type
 
@@ -37,7 +39,9 @@ class TypeInferenceVisitor(val st: SymbolTable) : Visitor {
     }
 
     override fun visit(expression: UnaryExpression) {
-        expression.expression.accept(this)
+        if (expression.operation == UnaryOperations.ARRAY_LENGTH)
+            type = Primitives.INTEGER
+        else expression.expression.accept(this)
     }
 
     override fun visit(expression: VariableExpression) {
@@ -51,5 +55,25 @@ class TypeInferenceVisitor(val st: SymbolTable) : Visitor {
 
     override fun visit(expression: CastExpression) {
         type = expression.type
+    }
+
+    override fun visit(expression: ArrayExpression) {
+        if (expression.type != null)
+            type = ArrayType(expression.type)
+        if (type == null && expression.values.isNotEmpty()) {
+            expression.values.first().accept(this)
+            if (type != null)
+                type = ArrayType(type!!)
+        }
+    }
+
+    override fun visit(expression: AssignmentExpression) {
+        expression.expression.accept(this)
+    }
+
+    override fun visit(expression: ArrayAccessExpression) {
+        expression.array.accept(this)
+        if (type is ArrayType)
+            type = (type as ArrayType).type
     }
 }
