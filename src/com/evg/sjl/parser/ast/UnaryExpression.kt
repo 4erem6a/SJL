@@ -4,6 +4,7 @@ import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.exceptions.InvalidOperandTypesException
 import com.evg.sjl.lib.UnaryOperations
 import com.evg.sjl.parser.visitors.Visitor
+import com.evg.sjl.values.ArrayType
 import com.evg.sjl.values.Primitives
 import jdk.internal.org.objectweb.asm.Opcodes.*
 import jdk.internal.org.objectweb.asm.tree.InsnNode
@@ -40,6 +41,12 @@ class UnaryExpression(var operation: UnaryOperations,
                         add(InsnNode(ICONST_0))
                         add(lEnd)
                     }
+                }
+                else -> throw InvalidOperandTypesException(operation, type)
+            }
+            is ArrayType -> when (operation) {
+                UnaryOperations.ARRAY_LENGTH -> {
+                    context.il.add(InsnNode(ARRAYLENGTH))
                 }
                 else -> throw InvalidOperandTypesException(operation, type)
             }
