@@ -64,14 +64,17 @@ enum class TokenTypes {
     WHILE,              //while
     DO,                 //do
     FOR,                //for
+    OF,                 //of
+    NEW,                //new
+    LENGTH,             //length
 
     TRUE,               //true
     FALSE,              //false
 
-    T_STRING,           //string
-    T_INTEGER,          //integer
-    T_DOUBLE,           //double
-    T_BOOLEAN,          //boolean
+    T_STRING,           //@string
+    T_INTEGER,          //@integer
+    T_DOUBLE,           //@double
+    T_BOOLEAN,          //@boolean
 
     EOF
 }
@@ -80,4 +83,6 @@ data class Position(val line: Int, val col: Int, val abs: Int) {
     override fun toString() = "[$line,$col:$abs]"
 }
 
-data class Token(val type: TokenTypes, val value: String, val position: Position)
+data class Token(val type: TokenTypes, val value: String, val position: Position) {
+    override fun toString() = "$type($value)$position"
+}

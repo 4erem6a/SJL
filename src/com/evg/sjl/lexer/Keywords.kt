@@ -15,6 +15,9 @@ object Keywords {
             "let" to LET,
             "while" to WHILE,
             "do" to DO,
-            "for" to FOR
+            "for" to FOR,
+            "of" to OF,
+            "new" to NEW,
+            "length" to LENGTH
     )
 }
