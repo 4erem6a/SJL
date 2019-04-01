@@ -1,6 +1,7 @@
 package com.evg.sjl.exceptions
 
 import com.evg.sjl.lib.Operations
+import com.evg.sjl.parser.ast.Expression
 import com.evg.sjl.values.Type
 
 abstract class CompileException(message: String)
@@ -26,3 +27,6 @@ class TypeInferenceFailException
 
 class MissingInitializerException(identifier: String)
     : CompileException("Variable $$identifier is missing initializer")
+
+class InvalidAssignmentTargetException(expression: Expression)
+    : CompileException("Invalid assignment target: ${expression.stringify()}")
