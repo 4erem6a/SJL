@@ -17,8 +17,8 @@ interface Visitor {
 
     fun visit(statement: VariableDefinitionStatement) {}
 
-    fun visit(statement: AssignmentStatement) {
-        statement.expression.accept(this)
+    fun visit(expression: AssignmentExpression) {
+        expression.expression.accept(this)
     }
 
 
@@ -59,5 +59,15 @@ interface Visitor {
     fun visit(statement: DoWhileStatement) {
         statement.body.accept(this)
         statement.condition.accept(this)
+    }
+
+    fun visit(expression: ArrayExpression) {
+        expression.length?.accept(this)
+        expression.values.forEach { it.accept(this) }
+    }
+
+    fun visit(expression: ArrayAccessExpression) {
+        expression.array.accept(this)
+        expression.key.accept(this)
     }
 }

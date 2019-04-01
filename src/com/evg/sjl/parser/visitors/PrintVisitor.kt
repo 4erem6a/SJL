@@ -38,10 +38,17 @@ class PrintVisitor : Visitor {
         result.appendln()
     }
 
-    override fun visit(statement: AssignmentStatement) {
-        result.append("$${statement.identifier} = ")
-        statement.expression.accept(this)
-        result.appendln()
+    override fun visit(expression: AssignmentExpression) {
+        expression.target.accept(this)
+        result.append(" = ")
+        expression.expression.accept(this)
+    }
+
+    override fun visit(expression: ArrayAccessExpression) {
+        expression.array.accept(this)
+        result.append("[")
+        expression.key.accept(this)
+        result.append("]")
     }
 
     override fun visit(statement: UnionStatement) {
@@ -103,6 +110,7 @@ class PrintVisitor : Visitor {
             NEGATION -> result.append("-")
             BITWISE_NEGATION -> result.append("~")
             BOOLEAN_NEGATION -> result.append("!")
+            ARRAY_LENGTH -> result.append("length ")
         }
         expression.expression.accept(this)
     }
@@ -121,16 +129,16 @@ class PrintVisitor : Visitor {
         expression.expression.accept(this)
     }
 
-    fun type(type: Type): String = "@" + when (type) {
-        is Primitives -> primitive(type)
+    fun type(type: Type): String = when (type) {
+        is Primitives -> "@${primitive(type)}"
+        is StringType -> "string"
         is ArrayType -> "${type(type.type)}[]"
         else -> "?"
     }
 
-    fun primitive(type: Primitives): String = when (type) {
+    private fun primitive(type: Primitives): String = when (type) {
         Primitives.INTEGER -> "integer"
         Primitives.DOUBLE -> "double"
-        Primitives.STRING -> "string"
         Primitives.BOOLEAN -> "boolean"
     }
 
@@ -202,6 +210,23 @@ class PrintVisitor : Visitor {
         result.append("while (")
         statement.condition.accept(this)
         result.append(")")
+    }
+
+    override fun visit(expression: ArrayExpression) {
+        result.append("[")
+        expression.values.forEachIndexed { i, e ->
+            e.accept(this)
+            if (i < expression.values.size - 1)
+                result.append(", ")
+        }
+        result.append("]")
+        if (expression.length != null) {
+            result.append("(")
+            expression.length.accept(this)
+            result.append(")")
+        }
+        if (expression.type != null)
+            result.append(" of ${type(expression.type)}")
     }
 
     private fun indent(offset: Int = 0) {
