@@ -50,7 +50,7 @@ fun main(argv: Array<String>) {
         }
 
         if (args.printTokens)
-            println("Token list:\n${SJL.tokenize(source).joinToString("\n")}end.")
+            println("Token list:\n${SJL.tokenize(source).joinToString("\n")}\nend.")
 
         if (args.printListing)
             println("Program listing: ${sjl.stringify()}")
