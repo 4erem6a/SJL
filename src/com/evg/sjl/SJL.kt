@@ -15,7 +15,7 @@ import com.evg.sjl.parser.visitors.PrintVisitor
 class SJL private constructor(private val ast: Node) {
     companion object {
         @JvmStatic
-        val VERSION: String = "1.4.0"
+        val VERSION: String = "1.5.0"
 
         @JvmStatic
         @Throws(LexicalException::class)

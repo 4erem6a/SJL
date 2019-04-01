@@ -7,8 +7,7 @@ class SymbolTable {
     class SymbolScope(var subscope: SymbolScope? = null) {
         val symbols = HashMap<String, Symbol>()
 
-        fun get(identifier: String): Symbol?
-            = symbols[identifier] ?: subscope?.get(identifier)
+        fun get(identifier: String): Symbol? = symbols[identifier] ?: subscope?.get(identifier)
     }
 
     var topScope = SymbolScope()

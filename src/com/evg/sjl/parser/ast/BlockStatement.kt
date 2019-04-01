@@ -10,5 +10,6 @@ class BlockStatement(var statements: List<Statement>) : Statement {
             stmt.compile(context)
         context.symbolTable.downScope()
     }
+
     override fun accept(visitor: Visitor) = visitor.visit(this)
 }
