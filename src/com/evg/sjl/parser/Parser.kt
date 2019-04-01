@@ -1,5 +1,6 @@
 package com.evg.sjl.parser
 
+import com.evg.sjl.exceptions.InvalidAssignmentTargetException
 import com.evg.sjl.exceptions.UnexpectedTokenException
 import com.evg.sjl.lexer.Position
 import com.evg.sjl.lexer.Token
@@ -27,7 +28,6 @@ class Parser(private val tokens: List<Token>) {
 
     private fun statement(): Statement = when {
         lookMatch(0, PRINT) || lookMatch(0, PRINTLN) -> printStatement()
-        lookMatch(0, IDENTIFIER) && (lookMatch(1, EQ) || lookMatch(1, CM))  -> assignmentStatement()
         match(IF) -> ifStatement()
         match(LET) -> variableDefinitionStatement()
         match(WHILE) -> whileStatement()
@@ -129,20 +129,18 @@ class Parser(private val tokens: List<Token>) {
         return VariableDefinitionStatement(id, type, initializer)
     }
 
-    private fun assignmentStatement(): Statement {
-        val ids = ArrayList<String>()
-        do
-            ids.add(consume(IDENTIFIER).value)
-        while (match(CM))
-        consume(EQ)
-        val expression = expression()
-        val statements = ArrayList<Statement>()
-        for (id in ids)
-            statements.add(AssignmentStatement(id, expression))
-        return UnionStatement(statements)
-    }
+    private fun expression(): Expression = assignment()
 
-    private fun expression(): Expression = or()
+    private fun assignment(): Expression {
+        var res = or()
+        loop@ while (true) res = when {
+            match(EQ) -> if (res !is AssignableExpression)
+                throw InvalidAssignmentTargetException(res)
+            else AssignmentExpression(res, or())
+            else -> break@loop
+        }
+        return res
+    }
 
     private fun or(): Expression {
         var res = xor()
@@ -254,7 +252,7 @@ class Parser(private val tokens: List<Token>) {
 
     private fun cast(): Expression = when {
         match(LP) -> {
-            val type = primitive()
+            val type = type()
             if (type == null) {
                 position--
                 unary()
@@ -267,13 +265,27 @@ class Parser(private val tokens: List<Token>) {
     }
 
     private fun unary(): Expression = when {
-        match(MN) -> UnaryExpression(NEGATION, primary())
-        match(TL) -> UnaryExpression(BITWISE_NEGATION, primary())
-        match(EX) -> UnaryExpression(BOOLEAN_NEGATION, primary())
+        match(MN) -> UnaryExpression(NEGATION, postfix())
+        match(TL) -> UnaryExpression(BITWISE_NEGATION, postfix())
+        match(EX) -> UnaryExpression(BOOLEAN_NEGATION, postfix())
+        match(LENGTH) -> UnaryExpression(ARRAY_LENGTH, postfix())
         else -> {
             match(PL)
-            primary()
+            postfix()
         }
+    }
+
+    private fun postfix(): Expression {
+        var res = primary()
+        loop@ while (true) res = when {
+            match(LB) -> {
+                val key = expression()
+                consume(RB)
+                ArrayAccessExpression(res, key)
+            }
+            else -> break@loop
+        }
+        return res
     }
 
     private fun primary(): Expression {
@@ -292,6 +304,8 @@ class Parser(private val tokens: List<Token>) {
             return VariableExpression(current.value)
         if (match(INPUT))
             return inputExpression()
+        if (match(LB))
+            return array()
         if (match(LP)) {
             val result = expression()
             consume(RP)
@@ -300,9 +314,26 @@ class Parser(private val tokens: List<Token>) {
         throw UnexpectedTokenException(current)
     }
 
+    private fun array(): Expression {
+        val expressions = mutableListOf<Expression>()
+        if (!match(RB)) {
+            do expressions.add(expression()) while (match(CM))
+            consume(RB)
+        }
+        val length = if (match(LP)) {
+            val expression = expression()
+            consume(RP)
+            expression
+        } else null
+        val type = if (match(OF))
+            type() ?: throw UnexpectedTokenException(get())
+        else null
+        return ArrayExpression(type, length, expressions)
+    }
+
     private fun inputExpression(): Expression {
         consume(CL)
-        val type = primitive() ?: throw UnexpectedTokenException(get())
+        val type = type() ?: throw UnexpectedTokenException(get())
         return InputExpression(type)
     }
 
@@ -313,7 +344,7 @@ class Parser(private val tokens: List<Token>) {
         return primitive
     }
 
-    private fun arrayType(type: Primitives): Type? {
+    private fun arrayType(type: Type): Type? {
         var arrayType: Type = type
         while (match(LB)) {
             arrayType = ArrayType(arrayType)
@@ -322,11 +353,11 @@ class Parser(private val tokens: List<Token>) {
         return arrayType
     }
 
-    private fun primitive(): Primitives? = when {
+    private fun primitive(): Type? = when {
         match(T_DOUBLE) -> Primitives.DOUBLE
         match(T_INTEGER) -> Primitives.INTEGER
-        match(T_STRING) -> Primitives.STRING
         match(T_BOOLEAN) -> Primitives.BOOLEAN
+        match(T_STRING) -> StringType()
         else -> null
     }
 
