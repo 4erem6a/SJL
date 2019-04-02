@@ -283,7 +283,16 @@ class Parser(private val tokens: List<Token>) {
                 consume(RB)
                 ArrayAccessExpression(res, key)
             }
-            match(MNGT) -> FieldExpression(res, consume(IDENTIFIER).value, type())
+            match(MNGT) -> {
+                val name = consume(IDENTIFIER).value
+                val args = if (lookMatch(0, LP))
+                    arguments()
+                else null
+                val type = type()
+                if (args == null)
+                    FieldExpression(res, name, type)
+                else MethodExpression(res, name, args, type)
+            }
             else -> break@loop
         }
         return res
