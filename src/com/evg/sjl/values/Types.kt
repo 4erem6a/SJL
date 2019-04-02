@@ -37,6 +37,8 @@ open class JavaClass(val name: String) : Type, Referential {
     override fun toString() = name
 }
 
+class JavaInterface(name: String) : JavaClass(name)
+
 object StringType : JavaClass("java/lang/String") {
     val defaultValue = StringValue("")
 

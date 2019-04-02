@@ -1,5 +1,6 @@
 package com.evg.sjl.lexer
 
+import com.evg.sjl.exceptions.MissingTypeParametersException
 import com.evg.sjl.values.*
 
 object Typenames {
@@ -12,7 +13,9 @@ object Typenames {
             "real" to DoubleTypename,
             "string" to StringTypename,
             "jvm" to JvmTypename,
-            "void" to VoidTypename
+            "void" to VoidTypename,
+            "interface" to InterfaceTypename,
+            "ji" to InterfaceTypename
     )
 }
 
@@ -38,6 +41,14 @@ object StringTypename : Typename {
 
 object JvmTypename : Typename {
     override fun getType(args: List<String>) = JavaClass(args.firstOrNull() ?: "java/lang/Object")
+}
+
+object InterfaceTypename : Typename {
+    override fun getType(args: List<String>): Type {
+        val name = args.firstOrNull()
+                ?: throw MissingTypeParametersException("interface", 1)
+        return JavaInterface(name)
+    }
 }
 
 object VoidTypename : Typename {

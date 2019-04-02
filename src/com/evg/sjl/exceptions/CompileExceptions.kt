@@ -1,7 +1,7 @@
 package com.evg.sjl.exceptions
 
-import com.evg.sjl.lib.Operations
 import com.evg.sjl.ast.Expression
+import com.evg.sjl.lib.Operations
 import com.evg.sjl.values.Type
 
 abstract class CompileException(message: String)
@@ -30,3 +30,6 @@ class MissingInitializerException(identifier: String)
 
 class InvalidAssignmentTargetException(expression: Expression)
     : CompileException("Invalid assignment target: ${expression.stringify()}")
+
+class MissingTypeParametersException(name: String, count: Int)
+    : CompileException("Type @$name is missing type parameters[$count]")
