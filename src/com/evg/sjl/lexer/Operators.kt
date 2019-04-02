@@ -29,6 +29,7 @@ object Operators {
             "&&" to AMAM,
             "^^" to CRCR,
             "!" to EX,
+            "->" to MNGT,
             "(" to LP,
             ")" to RP,
             "[" to LB,

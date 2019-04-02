@@ -95,9 +95,8 @@ class Lexer(private val source: String) {
         val pos = position()
         skip()
         val word = word()
-        val type = Typenames.map[word]
-                ?: throw UnknownTypenameException(word, pos)
-        add(Token(type, word, pos))
+        Typenames.map[word] ?: throw UnknownTypenameException(word, pos)
+        add(Token(TYPENAME, word, pos))
     }
 
     private fun word(): String {

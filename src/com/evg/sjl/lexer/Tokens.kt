@@ -40,6 +40,8 @@ enum class TokenTypes {
 
     EX,                 //!
 
+    MNGT,               //->
+
     CL,                 //:
     CM,                 //,
     SC,                 //;
@@ -71,10 +73,7 @@ enum class TokenTypes {
     TRUE,               //true
     FALSE,              //false
 
-    T_STRING,           //@string
-    T_INTEGER,          //@integer
-    T_DOUBLE,           //@double
-    T_BOOLEAN,          //@boolean
+    TYPENAME,           //@typename
 
     EOF
 }
