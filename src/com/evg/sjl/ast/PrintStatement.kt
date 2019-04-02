@@ -13,7 +13,7 @@ class PrintStatement(var newLine: Boolean, var expression: Expression) : Stateme
         context.il.add(FieldInsnNode(Opcodes.GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"))
         val type = context.typeInference.getType(expression)
         if (type !is Primitives)
-            CastExpression(StringType(), expression).compile(context)
+            CastExpression(StringType, expression).compile(context)
         else expression.compile(context)
         val signature = when (type) {
             is Primitives -> "(${type.jvmType})V"

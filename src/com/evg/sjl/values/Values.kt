@@ -16,7 +16,7 @@ class DoubleValue(val value: Double) : Value {
 
 class StringValue(val value: String) : Value {
     override val type: Type
-        get() = StringType()
+        get() = StringType
 }
 
 class BooleanValue(val value: Boolean) : Value {

@@ -33,26 +33,29 @@ open class JavaClass(val name: String) : Type, Referential {
     override fun hashCode(): Int {
         return name.hashCode()
     }
+
+    override fun toString() = name
 }
 
-class StringType : JavaClass("java/lang/String") {
-    companion object {
-        @JvmStatic
-        val defaultValue = StringValue("")
-    }
+object StringType : JavaClass("java/lang/String") {
+    val defaultValue = StringValue("")
+
+    override fun toString() = "STRING"
 }
 
 class ArrayType(val type: Type) : Type, Referential {
     override val jvmType = "[${type.jvmType}"
 
-    override fun toString(): String = "$type[]"
-
     override fun equals(other: Any?) = other is ArrayType && other.type == this.type
     override fun hashCode(): Int {
         return type.hashCode()
     }
+
+    override fun toString(): String = "$type[]"
 }
 
-class VoidType : Type {
+object VoidType : Type {
     override val jvmType = "V"
+
+    override fun toString() = "VOID"
 }
