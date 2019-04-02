@@ -40,20 +40,22 @@ fun main(argv: Array<String>) {
     }
 
     try {
-        val sjl = SJL.from(source)
+        if (args.execute || args.printListing) {
+            val sjl = SJL.from(source)
 
-        if (args.execute) {
-            val runnable = sjl.runnable
-            val execTime = measureTimeMillis { runnable.run() }
-            if (args.measureExecTime)
-                println("\nExecution took ${execTime}ms")
+            if (args.execute) {
+                val runnable = sjl.runnable
+                val execTime = measureTimeMillis { runnable.run() }
+                if (args.measureExecTime)
+                    println("\nExecution took ${execTime}ms")
+            }
+
+            if (args.printListing)
+                println("Program listing: ${sjl.stringify()}")
         }
 
         if (args.printTokens)
             println("Token list:\n${SJL.tokenize(source).joinToString("\n")}\nend.")
-
-        if (args.printListing)
-            println("Program listing: ${sjl.stringify()}")
 
     } catch (e: LexicalException) {
         System.err.println("Lexical error:\n\t${e.javaClass.simpleName}\n\t${e.message}")
