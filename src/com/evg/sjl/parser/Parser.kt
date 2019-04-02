@@ -316,6 +316,8 @@ class Parser(private val tokens: List<Token>) {
             return inputExpression()
         if (match(NEW))
             return new()
+        if (lookMatch(0, TYPENAME))
+            return static()
         if (match(LB))
             return array()
         if (match(LP)) {
@@ -324,6 +326,13 @@ class Parser(private val tokens: List<Token>) {
             return result
         }
         throw UnexpectedTokenException(current)
+    }
+
+    private fun static(): Expression {
+        val type = type()
+        consume(MNGT)
+        val name = consume(IDENTIFIER).value
+        return StaticFieldExpression(type, name, type())
     }
 
     private fun new(): Expression = NewExpression(type(), arguments())

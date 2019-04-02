@@ -83,4 +83,6 @@ interface Visitor {
         expression.target.accept(this)
         expression.args.forEach { it.accept(this) }
     }
+
+    fun visit(expression: StaticFieldExpression) { }
 }
