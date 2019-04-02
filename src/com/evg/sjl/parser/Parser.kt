@@ -1,14 +1,15 @@
 package com.evg.sjl.parser
 
+import com.evg.sjl.ast.*
 import com.evg.sjl.exceptions.InvalidAssignmentTargetException
 import com.evg.sjl.exceptions.UnexpectedTokenException
 import com.evg.sjl.lexer.Position
 import com.evg.sjl.lexer.Token
 import com.evg.sjl.lexer.TokenTypes
 import com.evg.sjl.lexer.TokenTypes.*
+import com.evg.sjl.lexer.Typenames
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations.*
-import com.evg.sjl.ast.*
 import com.evg.sjl.values.*
 
 class Parser(private val tokens: List<Token>) {
@@ -252,11 +253,10 @@ class Parser(private val tokens: List<Token>) {
 
     private fun cast(): Expression = when {
         match(LP) -> {
-            val type = type()
-            if (type == null) {
-                position--
+            if (lookMatch(0, TYPENAME)) {
                 unary()
             } else {
+                val type = type()
                 consume(RP)
                 CastExpression(type, unary())
             }
@@ -304,6 +304,8 @@ class Parser(private val tokens: List<Token>) {
             return VariableExpression(current.value)
         if (match(INPUT))
             return inputExpression()
+        if (match(NEW))
+            return new()
         if (match(LB))
             return array()
         if (match(LP)) {
@@ -312,6 +314,18 @@ class Parser(private val tokens: List<Token>) {
             return result
         }
         throw UnexpectedTokenException(current)
+    }
+
+    private fun new(): Expression = NewExpression(type(), arguments())
+
+    private fun arguments(): List<Expression> {
+        val result = mutableListOf<Expression>()
+        consume(LP)
+        if (!match(RP)) {
+            do result.add(expression()) while (match(CM))
+            consume(RP)
+        }
+        return result
     }
 
     private fun array(): Expression {
@@ -325,40 +339,36 @@ class Parser(private val tokens: List<Token>) {
             consume(RP)
             expression
         } else null
-        val type = if (match(OF))
-            type() ?: throw UnexpectedTokenException(get())
-        else null
+        val type = if (match(OF)) type() else null
         return ArrayExpression(type, length, expressions)
     }
 
     private fun inputExpression(): Expression {
         consume(CL)
-        val type = type() ?: throw UnexpectedTokenException(get())
+        val type = type()
         return InputExpression(type)
     }
 
-    private fun type(): Type? {
-        val primitive = primitive() ?: return null
+    private fun type(): Type {
+        val typename = consume(TYPENAME).value
+        val args = mutableListOf<String>()
+        if (match(LP) && !match(RP)) {
+            do args.add(consume(L_STRING).value) while (match(CM))
+            consume(RP)
+        }
+        val type = Typenames.map.getValue(typename).getType(args)
         if (lookMatch(0, LB))
-            return arrayType(primitive)
-        return primitive
+            return arrayType(type)
+        return type
     }
 
-    private fun arrayType(type: Type): Type? {
+    private fun arrayType(type: Type): Type {
         var arrayType: Type = type
         while (match(LB)) {
             arrayType = ArrayType(arrayType)
             consume(RB)
         }
         return arrayType
-    }
-
-    private fun primitive(): Type? = when {
-        match(T_DOUBLE) -> Primitives.DOUBLE
-        match(T_INTEGER) -> Primitives.INTEGER
-        match(T_BOOLEAN) -> Primitives.BOOLEAN
-        match(T_STRING) -> StringType()
-        else -> null
     }
 
     private fun consume(): Token {
