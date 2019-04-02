@@ -1,7 +1,7 @@
 package com.evg.sjl.exceptions
 
 import com.evg.sjl.lib.Operations
-import com.evg.sjl.parser.ast.Expression
+import com.evg.sjl.ast.Expression
 import com.evg.sjl.values.Type
 
 abstract class CompileException(message: String)

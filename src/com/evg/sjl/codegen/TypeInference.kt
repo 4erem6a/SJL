@@ -4,8 +4,8 @@ import com.evg.sjl.exceptions.TypeInferenceFailException
 import com.evg.sjl.exceptions.VariableUsedWithoutBeingDeclaredException
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations
-import com.evg.sjl.parser.ast.*
-import com.evg.sjl.parser.visitors.Visitor
+import com.evg.sjl.ast.*
+import com.evg.sjl.ast.visitors.Visitor
 import com.evg.sjl.values.ArrayType
 import com.evg.sjl.values.Primitives
 import com.evg.sjl.values.Type

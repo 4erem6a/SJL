@@ -1,11 +1,11 @@
-package com.evg.sjl.parser.ast
+package com.evg.sjl.ast
 
 import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.exceptions.InvalidValueTypeException
 import com.evg.sjl.exceptions.MissingInitializerException
 import com.evg.sjl.exceptions.TypeInferenceFailException
 import com.evg.sjl.exceptions.VariableAlreadyDeclaredException
-import com.evg.sjl.parser.visitors.Visitor
+import com.evg.sjl.ast.visitors.Visitor
 import com.evg.sjl.values.Primitives
 import com.evg.sjl.values.Referential
 import com.evg.sjl.values.StringType

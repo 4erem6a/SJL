@@ -9,8 +9,8 @@ import com.evg.sjl.exceptions.SyntaxException
 import com.evg.sjl.lexer.Lexer
 import com.evg.sjl.lexer.Token
 import com.evg.sjl.parser.Parser
-import com.evg.sjl.parser.ast.Node
-import com.evg.sjl.parser.visitors.PrintVisitor
+import com.evg.sjl.ast.Node
+import com.evg.sjl.ast.visitors.PrintVisitor
 
 class SJL private constructor(private val ast: Node) {
     companion object {

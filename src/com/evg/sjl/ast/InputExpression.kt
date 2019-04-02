@@ -1,8 +1,8 @@
-package com.evg.sjl.parser.ast
+package com.evg.sjl.ast
 
 import com.evg.sjl.codegen.BytecodeGenerator
 import com.evg.sjl.codegen.CompilationContext
-import com.evg.sjl.parser.visitors.Visitor
+import com.evg.sjl.ast.visitors.Visitor
 import com.evg.sjl.values.Primitives
 import com.evg.sjl.values.StringType
 import com.evg.sjl.values.Type

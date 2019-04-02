@@ -1,7 +1,7 @@
-package com.evg.sjl.parser.ast
+package com.evg.sjl.ast
 
 import com.evg.sjl.codegen.CompilationContext
-import com.evg.sjl.parser.visitors.Visitor
+import com.evg.sjl.ast.visitors.Visitor
 import com.evg.sjl.values.Primitives
 import jdk.internal.org.objectweb.asm.Opcodes.POP
 import jdk.internal.org.objectweb.asm.Opcodes.POP2

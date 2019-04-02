@@ -1,8 +1,8 @@
-package com.evg.sjl.parser.visitors
+package com.evg.sjl.ast.visitors
 
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations.*
-import com.evg.sjl.parser.ast.*
+import com.evg.sjl.ast.*
 import com.evg.sjl.values.*
 
 class PrintVisitor : Visitor {

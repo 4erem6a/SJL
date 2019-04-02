@@ -1,6 +1,6 @@
 package com.evg.sjl.codegen
 
-import com.evg.sjl.parser.ast.Node
+import com.evg.sjl.ast.Node
 import jdk.internal.org.objectweb.asm.ClassWriter
 import jdk.internal.org.objectweb.asm.Opcodes.*
 import jdk.internal.org.objectweb.asm.tree.*

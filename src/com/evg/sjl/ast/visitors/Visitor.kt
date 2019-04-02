@@ -1,6 +1,6 @@
-package com.evg.sjl.parser.visitors
+package com.evg.sjl.ast.visitors
 
-import com.evg.sjl.parser.ast.*
+import com.evg.sjl.ast.*
 
 interface Visitor {
     fun visit(statement: ExpressionStatement) {
