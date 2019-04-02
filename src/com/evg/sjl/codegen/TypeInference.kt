@@ -84,4 +84,8 @@ class TypeInferenceVisitor(private val st: SymbolTable) : Visitor {
     override fun visit(expression: FieldExpression) {
         type = expression.type
     }
+
+    override fun visit(expression: MethodExpression) {
+        type = expression.type
+    }
 }

@@ -78,4 +78,9 @@ interface Visitor {
     fun visit(expression: FieldExpression) {
         expression.target.accept(this)
     }
+
+    fun visit(expression: MethodExpression) {
+        expression.target.accept(this)
+        expression.args.forEach { it.accept(this) }
+    }
 }
