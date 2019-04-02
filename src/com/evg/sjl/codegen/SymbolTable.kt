@@ -10,7 +10,7 @@ class SymbolTable {
         fun get(identifier: String): Symbol? = symbols[identifier] ?: subscope?.get(identifier)
     }
 
-    var topScope = SymbolScope()
+    private var topScope = SymbolScope()
     private var lastSymbol: Symbol = Symbol(0, Primitives.INTEGER)
 
     fun register(identifier: String, type: Type): Symbol {

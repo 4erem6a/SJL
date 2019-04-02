@@ -1,11 +1,11 @@
 package com.evg.sjl.codegen
 
+import com.evg.sjl.ast.*
+import com.evg.sjl.ast.visitors.Visitor
 import com.evg.sjl.exceptions.TypeInferenceFailException
 import com.evg.sjl.exceptions.VariableUsedWithoutBeingDeclaredException
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations
-import com.evg.sjl.ast.*
-import com.evg.sjl.ast.visitors.Visitor
 import com.evg.sjl.values.ArrayType
 import com.evg.sjl.values.Primitives
 import com.evg.sjl.values.Type
@@ -19,7 +19,7 @@ class TypeInferenceProvider(val symbolTable: SymbolTable) {
     }
 }
 
-class TypeInferenceVisitor(val st: SymbolTable) : Visitor {
+class TypeInferenceVisitor(private val st: SymbolTable) : Visitor {
     var type: Type? = null
 
     override fun visit(expression: ValueExpression) {
@@ -75,5 +75,9 @@ class TypeInferenceVisitor(val st: SymbolTable) : Visitor {
         expression.array.accept(this)
         if (type is ArrayType)
             type = (type as ArrayType).type
+    }
+
+    override fun visit(expression: NewExpression) {
+        type = expression.type
     }
 }
