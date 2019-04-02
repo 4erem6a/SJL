@@ -70,4 +70,12 @@ interface Visitor {
         expression.array.accept(this)
         expression.key.accept(this)
     }
+
+    fun visit(expression: NewExpression) {
+        expression.args.forEach { it.accept(this) }
+    }
+
+    fun visit(expression: FieldExpression) {
+        expression.target.accept(this)
+    }
 }

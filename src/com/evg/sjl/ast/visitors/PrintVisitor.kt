@@ -1,8 +1,8 @@
 package com.evg.sjl.ast.visitors
 
+import com.evg.sjl.ast.*
 import com.evg.sjl.lib.BinaryOperations.*
 import com.evg.sjl.lib.UnaryOperations.*
-import com.evg.sjl.ast.*
 import com.evg.sjl.values.*
 
 class PrintVisitor : Visitor {
@@ -30,10 +30,10 @@ class PrintVisitor : Visitor {
     override fun visit(statement: VariableDefinitionStatement) {
         result.append("let $${statement.identifier}")
         if (statement.type != null)
-            result.append(": ${type(statement.type!!)}")
+            result.append(": ${type(statement.type)}")
         if (statement.initializer != null) {
             result.append(" = ")
-            statement.initializer!!.accept(this)
+            statement.initializer.accept(this)
         }
         result.appendln()
     }
@@ -131,9 +131,10 @@ class PrintVisitor : Visitor {
 
     fun type(type: Type): String = when (type) {
         is Primitives -> "@${primitive(type)}"
-        is StringType -> "string"
+        is StringType -> "@string"
+        is JavaClass -> "@jvm(\"${type.name}\")"
         is ArrayType -> "${type(type.type)}[]"
-        else -> "?"
+        else -> "@?"
     }
 
     private fun primitive(type: Primitives): String = when (type) {
@@ -227,6 +228,16 @@ class PrintVisitor : Visitor {
         }
         if (expression.type != null)
             result.append(" of ${type(expression.type)}")
+    }
+
+    override fun visit(expression: NewExpression) {
+        result.append("new ${type(expression.type)}(")
+        expression.args.forEachIndexed { i, e ->
+            e.accept(this)
+            if (i < expression.args.size - 1)
+                result.append(", ")
+        }
+        result.append(")")
     }
 
     private fun indent(offset: Int = 0) {
