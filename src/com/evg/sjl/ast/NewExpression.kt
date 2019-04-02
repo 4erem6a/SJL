@@ -19,7 +19,7 @@ class NewExpression(val type: Type, val args: List<Expression> = listOf()) : Exp
             il.add(InsnNode(Opcodes.DUP))
             val argumentSignature = args
                     .map { typeInference.getType(it) }
-                    .joinToString { it.jvmType }
+                    .joinToString("") { it.jvmType }
             args.forEach { it.compile(context) }
             il.add(MethodInsnNode(
                     Opcodes.INVOKESPECIAL,
