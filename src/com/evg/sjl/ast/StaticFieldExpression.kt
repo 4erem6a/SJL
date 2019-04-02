@@ -33,8 +33,8 @@ class StaticFieldExpression(val targetType: Type, val name: String, val type: Ty
         expression.compile(context)
         with(context.il) {
             when (type) {
-                Primitives.DOUBLE -> add(InsnNode(Opcodes.DUP2_X1))
-                else -> add(InsnNode(Opcodes.DUP_X1))
+                Primitives.DOUBLE -> add(InsnNode(Opcodes.DUP2))
+                else -> add(InsnNode(Opcodes.DUP))
             }
             add(FieldInsnNode(
                     Opcodes.PUTSTATIC,
