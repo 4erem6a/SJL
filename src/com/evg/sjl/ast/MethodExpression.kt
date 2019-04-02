@@ -4,6 +4,7 @@ import com.evg.sjl.ast.visitors.Visitor
 import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.exceptions.InvalidValueTypeException
 import com.evg.sjl.values.JavaClass
+import com.evg.sjl.values.JavaInterface
 import com.evg.sjl.values.Type
 import jdk.internal.org.objectweb.asm.Opcodes
 import jdk.internal.org.objectweb.asm.tree.MethodInsnNode
@@ -19,7 +20,9 @@ class MethodExpression(val target: Expression, val name: String, val args: List<
                 .map { context.typeInference.getType(it) }
                 .joinToString("") { it.jvmType }
         context.il.add(MethodInsnNode(
-                Opcodes.INVOKEVIRTUAL,
+                if (targetType is JavaInterface)
+                    Opcodes.INVOKEINTERFACE
+                else Opcodes.INVOKEVIRTUAL,
                 targetType.name,
                 name,
                 "($argumentSignature)${type.jvmType}",
