@@ -1,9 +1,9 @@
 package com.evg.sjl.ast
 
+import com.evg.sjl.ast.visitors.Visitor
 import com.evg.sjl.codegen.CompilationContext
 import com.evg.sjl.exceptions.InvalidOperandTypesException
 import com.evg.sjl.lib.BinaryOperations
-import com.evg.sjl.ast.visitors.Visitor
 import com.evg.sjl.values.Primitives
 import com.evg.sjl.values.StringType
 import com.evg.sjl.values.Type
@@ -81,6 +81,7 @@ class BinaryExpression(var operation: BinaryOperations,
                     else -> throw InvalidOperandTypesException(operation, lt, rType)
                 }
             }
+            else -> throw InvalidOperandTypesException(operation, lt, rType)
         }
     }
 
