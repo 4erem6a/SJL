@@ -332,7 +332,13 @@ class Parser(private val tokens: List<Token>) {
         val type = type()
         consume(MNGT)
         val name = consume(IDENTIFIER).value
-        return StaticFieldExpression(type, name, type())
+        val args = if (lookMatch(0, LP))
+            arguments()
+        else null
+        val resType = type()
+        return if (args == null)
+            StaticFieldExpression(type, name, resType)
+        else StaticMethodExpression(type, name, args, resType)
     }
 
     private fun new(): Expression = NewExpression(type(), arguments())
