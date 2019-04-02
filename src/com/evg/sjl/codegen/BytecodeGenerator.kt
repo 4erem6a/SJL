@@ -7,8 +7,14 @@ import jdk.internal.org.objectweb.asm.tree.*
 
 class BytecodeGenerator(private val ast: Node) {
     companion object {
-        const val generatedClassName = "com/evg/SJLRunnable"
-        const val scannerFieldName = "scanner"
+        @JvmStatic
+        var generatedClassNameBase = "com/evg/SJLRunnable"
+        @JvmStatic
+        var scannerFieldName = "scanner"
+        @JvmStatic
+        private var classesGenerated = 0
+        val currentClassName
+            get() = "$generatedClassNameBase$classesGenerated"
     }
 
     fun generate(): ByteArray {
@@ -16,7 +22,7 @@ class BytecodeGenerator(private val ast: Node) {
 
         cn.version = V1_8
         cn.access = ACC_PUBLIC + ACC_SUPER
-        cn.name = generatedClassName
+        cn.name = currentClassName
         cn.superName = "java/lang/Object"
         cn.interfaces.add("java/lang/Runnable")
 
@@ -39,7 +45,7 @@ class BytecodeGenerator(private val ast: Node) {
             il.add(MethodInsnNode(INVOKESPECIAL, "java/util/Scanner", "<init>", "(Ljava/io/InputStream;)V", false))
             il.add(FieldInsnNode(GETSTATIC, "java/util/Locale", "ENGLISH", "Ljava/util/Locale;"))
             il.add(MethodInsnNode(INVOKEVIRTUAL, "java/util/Scanner", "useLocale", "(Ljava/util/Locale;)Ljava/util/Scanner;", false))
-            il.add(FieldInsnNode(PUTFIELD, generatedClassName, scannerFieldName, "Ljava/util/Scanner;"))
+            il.add(FieldInsnNode(PUTFIELD, currentClassName, scannerFieldName, "Ljava/util/Scanner;"))
             il.add(InsnNode(RETURN))
 
             cn.methods.add(mn)
@@ -65,6 +71,8 @@ class BytecodeGenerator(private val ast: Node) {
         val cw = ClassWriter(ClassWriter.COMPUTE_FRAMES)
 
         cn.accept(cw)
+
+        classesGenerated++
 
         return cw.toByteArray()
     }
