@@ -125,15 +125,17 @@ class PrintVisitor : Visitor {
     }
 
     override fun visit(expression: CastExpression) {
-        result.append("(${type(expression.type)})")
         expression.expression.accept(this)
+        result.append(" as ${type(expression.type)}")
     }
 
     fun type(type: Type): String = when (type) {
         is Primitives -> "@${primitive(type)}"
         is StringType -> "@string"
+        is JavaInterface -> "@interface(\"${type.name}\")"
         is JavaClass -> "@jvm(\"${type.name}\")"
         is ArrayType -> "${type(type.type)}[]"
+        is VoidType -> "@void"
         else -> "@?"
     }
 
@@ -238,6 +240,42 @@ class PrintVisitor : Visitor {
                 result.append(", ")
         }
         result.append(")")
+    }
+
+    override fun visit(expression: StaticMethodExpression) {
+        result.append(type(expression.targetType))
+        result.append("->")
+        result.append("$${expression.name}(")
+        expression.args.forEachIndexed { i, e ->
+            e.accept(this)
+            if (i < expression.args.size - 1)
+                result.append(", ")
+        }
+        result.append(")${type(expression.type)}")
+    }
+
+    override fun visit(expression: StaticFieldExpression) {
+        result.append(type(expression.targetType))
+        result.append("->")
+        result.append("$${expression.name}${type(expression.type)}")
+    }
+
+    override fun visit(expression: MethodExpression) {
+        expression.target.accept(this)
+        result.append("->")
+        result.append("$${expression.name}(")
+        expression.args.forEachIndexed { i, e ->
+            e.accept(this)
+            if (i < expression.args.size - 1)
+                result.append(", ")
+        }
+        result.append(")${type(expression.type)}")
+    }
+
+    override fun visit(expression: FieldExpression) {
+        expression.target.accept(this)
+        result.append("->")
+        result.append("$${expression.name}${type(expression.type)}")
     }
 
     private fun indent(offset: Int = 0) {
