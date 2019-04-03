@@ -69,6 +69,7 @@ enum class TokenTypes {
     OF,                 //of
     NEW,                //new
     LENGTH,             //length
+    AS,                 //as
 
     TRUE,               //true
     FALSE,              //false

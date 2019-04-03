@@ -18,6 +18,7 @@ object Keywords {
             "for" to FOR,
             "of" to OF,
             "new" to NEW,
-            "length" to LENGTH
+            "length" to LENGTH,
+            "as" to AS
     )
 }

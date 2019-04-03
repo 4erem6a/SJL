@@ -241,27 +241,14 @@ class Parser(private val tokens: List<Token>) {
     }
 
     private fun multiplicative(): Expression {
-        var res = cast()
+        var res = unary()
         loop@ while (true) res = when {
-            match(ST) -> BinaryExpression(MULTIPLICATION, res, cast())
-            match(SL) -> BinaryExpression(DIVISION, res, cast())
-            match(PR) -> BinaryExpression(REMAINDER, res, cast())
+            match(ST) -> BinaryExpression(MULTIPLICATION, res, unary())
+            match(SL) -> BinaryExpression(DIVISION, res, unary())
+            match(PR) -> BinaryExpression(REMAINDER, res, unary())
             else -> break@loop
         }
         return res
-    }
-
-    private fun cast(): Expression = when {
-        match(LP) -> {
-            if (lookMatch(0, TYPENAME)) {
-                unary()
-            } else {
-                val type = type()
-                consume(RP)
-                CastExpression(type, unary())
-            }
-        }
-        else -> unary()
     }
 
     private fun unary(): Expression = when {
@@ -293,6 +280,7 @@ class Parser(private val tokens: List<Token>) {
                     FieldExpression(res, name, type)
                 else MethodExpression(res, name, args, type)
             }
+            match(AS) -> CastExpression(type(), res)
             else -> break@loop
         }
         return res
